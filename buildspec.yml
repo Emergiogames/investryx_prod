@@ -22,8 +22,8 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker images...
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f source_code/deployment/docker/backend/Dockerfile source_code
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f source_code/deployment/docker/nginx/Dockerfile source_code/deployment/docker/nginx
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f investryx/deployment/docker/backend/Dockerfile investryx
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f investryx/deployment/docker/nginx/Dockerfile investryx/deployment/docker/nginx
       - docker pull redis:6-alpine
       - docker tag redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
 
@@ -40,5 +40,5 @@ phases:
 artifacts:
   files:
     - imageDefinitions.json
-    - source_code/docker-compose.yml
-    - source_code/appspec.yml
+    - investryx/docker-compose.yml
+    - investryx/appspec.yml
