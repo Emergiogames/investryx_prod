@@ -1,0 +1,106 @@
+version: "3.8"
+services:
+  investryx_prod_webserver:
+    container_name: investryx_prod_webserver
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - investryx_network
+    depends_on:
+      - investryx_prod_backend
+    env_file:
+      - .env
+
+  investryx_prod_backend:
+    container_name: investryx_prod_backend
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend:latest
+    command: >
+      /app/venv/bin/gunicorn smerger.wsgi:application
+      --bind 0.0.0.0:8000
+      --workers 4
+      --threads 4
+      --worker-class sync
+      --max-requests 1000
+      --max-requests-jitter 50
+      --timeout 120
+      --keep-alive 5
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    depends_on:
+      - investryx_prod_redis
+    networks:
+      - investryx_network
+
+  investryx_prod_redis:
+    container_name: investryx_prod_redis
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-redis:latest
+    command: redis-server --appendonly yes
+    networks:
+      - investryx_network
+
+  investryx_prod_uvicorn:
+    container_name: investryx_prod_uvicorn
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend:latest
+    command: >
+      /app/venv/bin/gunicorn smerger.asgi:application
+      --bind 0.0.0.0:8001
+      --workers 4
+      --worker-class uvicorn.workers.UvicornWorker
+      --timeout 300
+      --keep-alive 65
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    depends_on:
+      - investryx_prod_backend
+      - investryx_prod_redis
+    networks:
+      - investryx_network
+
+  investryx_prod_migrate_db:
+    container_name: investryx_prod_migrate_db
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend:latest
+    command: >
+      bash -c "
+      /app/venv/bin/python3 manage.py makemigrations --noinput &&
+      /app/venv/bin/python3 manage.py migrate auth &&
+      /app/venv/bin/python3 manage.py migrate contenttypes &&
+      /app/venv/bin/python3 manage.py migrate admin &&
+      /app/venv/bin/python3 manage.py migrate sessions &&
+      /app/venv/bin/python3 manage.py migrate --noinput &&
+      /app/venv/bin/python3 manage.py createcachetable
+      "
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - investryx_prod_backend
+    networks:
+      - investryx_network
+
+  investryx_prod_migrate_setup:
+    container_name: investryx_prod_migrate_setup
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend:latest
+    command: >
+      /app/venv/bin/python3 manage.py create_superuser &&
+      /app/venv/bin/python3 manage.py collectstatic --noinput
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - investryx_prod_migrate_db
+    networks:
+      - investryx_network
+
+networks:
+  investryx_network:
+    driver: bridge
