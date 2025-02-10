@@ -19,11 +19,10 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker images...
-      # Fixed paths since we're already in investryx_prod directory
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
-      - docker pull redis:6-alpine
-      - docker tag redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
+      - docker pull public.ecr.aws/docker/library/redis:6-alpine
+      - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
