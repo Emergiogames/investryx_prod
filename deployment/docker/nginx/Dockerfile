@@ -1,5 +1,5 @@
 # Use the official nginx image as base
-FROM nginx:1.25-alpine
+FROM public.ecr.aws/nginx/nginx:1.25-alpine
 
 # Remove the default nginx configuration
 RUN rm /etc/nginx/conf.d/default.conf
