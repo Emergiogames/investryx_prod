@@ -1,28 +1,32 @@
 version: 0.2
 
-
 env:
   variables:
     AWS_DEFAULT_REGION: "ap-south-1"
-    AWS_ACCOUNT_ID: "140023367075" 
+    AWS_ACCOUNT_ID: "140023367075"
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo Pulling latest changes from Git repository...
+      - git clone https://github.com/Emergiogames/investryx_prod.git investryx
+      - cd investryx
+      - git checkout main  
+      - git pull origin main
+      - COMMIT_HASH=$(git rev-parse --short HEAD)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
-  
+
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker images...
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f source_code/deployment/docker/backend/Dockerfile source_code
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f source_code/deployment/docker/nginx/Dockerfile source_code/deployment/docker/nginx
       - docker pull redis:6-alpine
       - docker tag redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
-      
+
   post_build:
     commands:
       - echo Build completed on `date`
@@ -36,5 +40,5 @@ phases:
 artifacts:
   files:
     - imageDefinitions.json
-    - docker-compose.yml
-    - appspec.yml
+    - source_code/docker-compose.yml
+    - source_code/appspec.yml
