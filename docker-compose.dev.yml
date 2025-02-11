@@ -33,9 +33,9 @@ services:
       --timeout 120
       --keep-alive 5
       --reload  # Added for development auto-reload
-    volumes:
-      - .:/app  # Added for hot-reload
-      - ./logs/backend:/app/logs  # Added for easier debugging
+    # volumes:
+    #   - .:/app  # Added for hot-reload
+    #   - ./logs/backend:/app/logs  # Added for easier debugging
     extra_hosts:
       - "host.docker.internal:host-gateway"
     env_file:
@@ -69,9 +69,9 @@ services:
       --timeout 300
       --keep-alive 65
       --reload  # Added for development auto-reload
-    volumes:
-      - .:/app  # Added for hot-reload
-      - ./logs/uvicorn:/app/logs  # Added for easier debugging
+    # volumes:
+    #   - .:/app  # Added for hot-reload
+    #   - ./logs/uvicorn:/app/logs  # Added for easier debugging
     extra_hosts:
       - "host.docker.internal:host-gateway"
     env_file:
@@ -100,7 +100,7 @@ services:
     env_file:
       - .env.dev
     volumes:
-      - .:/app  # Added for development
+   #   - .:/app  # Added for development
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -120,7 +120,7 @@ services:
     env_file:
       - .env.dev
     volumes:
-      - .:/app  # Added for development
+  #    - .:/app  # Added for development
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
