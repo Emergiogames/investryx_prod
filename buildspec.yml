@@ -1,37 +1,81 @@
 version: 0.2
+
 env:
   variables:
     AWS_DEFAULT_REGION: "ap-south-1"
     AWS_ACCOUNT_ID: "140023367075"
+    PROJECT_NAME: "investryx"
+
 phases:
   pre_build:
     commands:
+      # Debug information
+      - echo "Current working directory:"
+      - pwd
+      - echo "Directory contents:"
+      - ls -la
+      
+      # Login to ECR
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      
+      # Setup Git repository
       - echo Pulling latest changes from Git repository...
       - git clone https://github.com/Emergiogames/investryx_prod.git
       - cd investryx_prod
       - git checkout main
       - git pull origin main
+      
+      # Set environment variables
       - COMMIT_HASH=$(git rev-parse --short HEAD)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
+      - ECR_REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      
+      # Debug nginx directory
+      - echo "Nginx directory contents:"
+      - ls -la deployment/docker/nginx/
+
   build:
     commands:
       - echo Build started on `date`
-      - echo Building the Docker images...
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
+      - echo Building Docker images with tag: $IMAGE_TAG
+      
+      # Build backend
+      - echo "Building backend image..."
+      - docker build -t $ECR_REGISTRY/$PROJECT_NAME-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
+      
+      # Build nginx
+      - echo "Building nginx image..."
+      - docker build -t $ECR_REGISTRY/$PROJECT_NAME-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile ./deployment/docker/nginx
+      
+      # Pull and tag Redis
+      - echo "Pulling Redis image..."
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
-      - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
+      - docker tag public.ecr.aws/docker/library/redis:6-alpine $ECR_REGISTRY/$PROJECT_NAME-redis:$IMAGE_TAG
+
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Pushing the Docker images...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
-      - echo Writing image definitions file...
-      - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
+      
+      # Push images with commit hash tags
+      - echo "Pushing images with commit hash tags..."
+      - docker push $ECR_REGISTRY/$PROJECT_NAME-backend:$IMAGE_TAG
+      - docker push $ECR_REGISTRY/$PROJECT_NAME-nginx:$IMAGE_TAG
+      - docker push $ECR_REGISTRY/$PROJECT_NAME-redis:$IMAGE_TAG
+      
+      # Tag and push latest
+      - echo "Tagging and pushing latest versions..."
+      - docker tag $ECR_REGISTRY/$PROJECT_NAME-backend:$IMAGE_TAG $ECR_REGISTRY/$PROJECT_NAME-backend:latest
+      - docker tag $ECR_REGISTRY/$PROJECT_NAME-nginx:$IMAGE_TAG $ECR_REGISTRY/$PROJECT_NAME-nginx:latest
+      - docker tag $ECR_REGISTRY/$PROJECT_NAME-redis:$IMAGE_TAG $ECR_REGISTRY/$PROJECT_NAME-redis:latest
+      - docker push $ECR_REGISTRY/$PROJECT_NAME-backend:latest
+      - docker push $ECR_REGISTRY/$PROJECT_NAME-nginx:latest
+      - docker push $ECR_REGISTRY/$PROJECT_NAME-redis:latest
+      
+      # Generate image definitions file
+      - echo "Writing image definitions file..."
+      - printf '{"ImageURI":"%s"}' $ECR_REGISTRY/$PROJECT_NAME-backend:$IMAGE_TAG > imageDefinitions.json
+
 artifacts:
   files:
     - imageDefinitions.json
