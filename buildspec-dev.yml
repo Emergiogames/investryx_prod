@@ -1,0 +1,43 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: "ap-south-1"
+    AWS_ACCOUNT_ID: "140023367075"
+    ENV: "dev"  # Changed to dev environment
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo Pulling latest changes from Git repository...
+      - git clone https://github.com/Emergiogames/investryx_prod.git
+      - cd investryx_prod
+      - git checkout develop  # Changed to develop branch
+      - git pull origin develop
+      - COMMIT_HASH=$(git rev-parse --short HEAD)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}-dev  # Added dev suffix to distinguish from prod
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker images...
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend-dev:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .  # Added -dev suffix
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx-dev:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx  # Added -dev suffix
+      - docker pull public.ecr.aws/docker/library/redis:6-alpine
+      - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis-dev:$IMAGE_TAG  # Added -dev suffix
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend-dev:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx-dev:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis-dev:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend-dev:$IMAGE_TAG > imageDefinitions.json
+
+artifacts:
+  files:
+    - imageDefinitions.json
+    - docker-compose.yml
+    - appspec.yml
