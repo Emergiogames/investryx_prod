@@ -4,6 +4,7 @@ env:
   variables:
     AWS_DEFAULT_REGION: "ap-south-1"
     AWS_ACCOUNT_ID: "140023367075"
+    ENV: "prod"
 
 phases:
   pre_build:
