@@ -99,8 +99,8 @@ services:
       "
     env_file:
       - .env.dev
-    volumes:
-   #   - .:/app  # Added for development
+    # volumes:
+    #  - .:/app  # Added for development
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -119,8 +119,8 @@ services:
       "
     env_file:
       - .env.dev
-    volumes:
-  #    - .:/app  # Added for development
+    # volumes:
+    #   - .:/app  # Added for development
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
