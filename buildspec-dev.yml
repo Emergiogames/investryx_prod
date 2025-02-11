@@ -23,7 +23,7 @@ phases:
       - echo Build started on `date`
       - echo Building the Docker images...
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend-dev:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .  # Added -dev suffix
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx-dev:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx  # Added -dev suffix
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx-dev:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile.dev deployment/docker/nginx  # Added -dev suffix
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
       - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis-dev:$IMAGE_TAG  # Added -dev suffix
   post_build:
