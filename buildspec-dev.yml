@@ -1,0 +1,75 @@
+version: 0.2
+env:
+  variables:
+    AWS_DEFAULT_REGION: "ap-south-1"
+    AWS_ACCOUNT_ID: "140023367075"
+    ENV: "dev"
+    ECR_BASE_URI: "140023367075.dkr.ecr.ap-south-1.amazonaws.com"
+
+phases:
+  pre_build:
+    commands:
+      # Login to ECR
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      
+      # Setup Git repository
+      - echo Pulling latest changes from Git repository...
+      - git clone https://github.com/Emergiogames/investryx_prod.git
+      - cd investryx_prod
+      - git checkout develop
+      - git pull origin develop
+      
+      # Set up image tags
+      - COMMIT_HASH=$(git rev-parse --short HEAD)
+      - COMMIT_TAG=${COMMIT_HASH}-dev
+      - LATEST_TAG=latest-dev
+      
+      # Print variables for logging
+      - echo "Building with commit tag $COMMIT_TAG and latest tag $LATEST_TAG"
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker images...
+      
+      # Build backend image
+      - docker build -t $ECR_BASE_URI/investryx-backend-dev:$COMMIT_TAG -t $ECR_BASE_URI/investryx-backend-dev:$LATEST_TAG -f deployment/docker/backend/Dockerfile .
+      
+      # Build nginx image
+      - docker build -t $ECR_BASE_URI/investryx-nginx-dev:$COMMIT_TAG -t $ECR_BASE_URI/investryx-nginx-dev:$LATEST_TAG -f deployment/docker/nginx/Dockerfile.dev deployment/docker/nginx
+      
+      # Pull and tag Redis image
+      - docker pull public.ecr.aws/docker/library/redis:6-alpine
+      - docker tag public.ecr.aws/docker/library/redis:6-alpine $ECR_BASE_URI/investryx-redis-dev:$COMMIT_TAG
+      - docker tag public.ecr.aws/docker/library/redis:6-alpine $ECR_BASE_URI/investryx-redis-dev:$LATEST_TAG
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      
+      # Push backend images
+      - docker push $ECR_BASE_URI/investryx-backend-dev:$COMMIT_TAG
+      - docker push $ECR_BASE_URI/investryx-backend-dev:$LATEST_TAG
+      
+      # Push nginx images
+      - docker push $ECR_BASE_URI/investryx-nginx-dev:$COMMIT_TAG
+      - docker push $ECR_BASE_URI/investryx-nginx-dev:$LATEST_TAG
+      
+      # Push redis images
+      - docker push $ECR_BASE_URI/investryx-redis-dev:$COMMIT_TAG
+      - docker push $ECR_BASE_URI/investryx-redis-dev:$LATEST_TAG
+      
+      # Create image definitions file for deployment
+      - echo Writing image definitions file...
+      - printf '{"ImageURI":"%s"}' $ECR_BASE_URI/investryx-backend-dev:$LATEST_TAG > imageDefinitions.json
+      
+      # Print completion message with tags
+      - echo "Successfully pushed images with commit tag $COMMIT_TAG and latest tag $LATEST_TAG"
+
+artifacts:
+  files:
+    - imageDefinitions.json
+    - docker-compose.yml
+    - appspec.yml
