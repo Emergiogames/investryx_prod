@@ -18,21 +18,40 @@ phases:
       - git pull origin main
       - COMMIT_HASH=$(git rev-parse --short HEAD)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
+
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker images...
+      # Build and tag backend image with both commit hash and latest
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest
+      
+      # Build and tag nginx image with both commit hash and latest
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:latest
+      
+      # Pull and tag Redis image with both commit hash and latest
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
       - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
+
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
+      # Push backend images (both tags)
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest
+      
+      # Push nginx images (both tags)
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:latest
+      
+      # Push redis images (both tags)
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
+      
       - echo Writing image definitions file...
       - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
 
