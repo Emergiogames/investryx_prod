@@ -2,40 +2,32 @@ version: "3.8"
 services:
   investryx_dev_webserver:
     container_name: investryx_dev_webserver
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-nginx-dev:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-nginx-dev:latest-dev
     ports:
-      - "8080:80"  # Changed port to avoid conflicts with production
-      - "8443:443"
+      - "80:80"
+      - "443:443"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
       - investryx_dev_network
     depends_on:
       - investryx_dev_backend
-    # volumes:
-    #   - /etc/letsencrypt:/etc/letsencrypt
-    #   - ./nginx/dev.conf:/etc/nginx/conf.d/default.conf  # Added for dev configuration
-    #   - ./logs/nginx:/var/log/nginx  # Added for easier debugging
     env_file:
-      - .env.dev  # Using dev environment file
+      - .env.dev
 
   investryx_dev_backend:
     container_name: investryx_dev_backend
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend-dev:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend-dev:latest-dev
     command: >
       /app/venv/bin/gunicorn smerger.wsgi:application
       --bind 0.0.0.0:8000
-      --workers 2  # Reduced for development
-      --threads 2  # Reduced for development
+      --workers 4
+      --threads 4
       --worker-class sync
-      --max-requests 100  # Reduced for development
-      --max-requests-jitter 20
+      --max-requests 1000
+      --max-requests-jitter 50
       --timeout 120
       --keep-alive 5
-      --reload  # Added for development auto-reload
-    # volumes:
-    #   - .:/app  # Added for hot-reload
-    #   - ./logs/backend:/app/logs  # Added for easier debugging
     extra_hosts:
       - "host.docker.internal:host-gateway"
     env_file:
@@ -44,34 +36,24 @@ services:
       - investryx_dev_redis
     networks:
       - investryx_dev_network
-    ports:
-      - "9000:8000"  # Exposed for direct access during development
 
   investryx_dev_redis:
     container_name: investryx_dev_redis
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-redis-dev:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-redis-dev:latest-dev
     command: redis-server --appendonly yes
     networks:
       - investryx_dev_network
-    ports:
-      - "6380:6379"  # Exposed for development debugging
-    volumes:
-      - redis_dev_data:/data  # Added for development persistence
 
   investryx_dev_uvicorn:
     container_name: investryx_dev_uvicorn
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend-dev:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend-dev:latest-dev
     command: >
       /app/venv/bin/gunicorn smerger.asgi:application
       --bind 0.0.0.0:8001
-      --workers 2  # Reduced for development
+      --workers 4
       --worker-class uvicorn.workers.UvicornWorker
       --timeout 300
       --keep-alive 65
-      --reload  # Added for development auto-reload
-    # volumes:
-    #   - .:/app  # Added for hot-reload
-    #   - ./logs/uvicorn:/app/logs  # Added for easier debugging
     extra_hosts:
       - "host.docker.internal:host-gateway"
     env_file:
@@ -81,12 +63,10 @@ services:
       - investryx_dev_redis
     networks:
       - investryx_dev_network
-    ports:
-      - "9001:8001"  # Exposed for development debugging
 
   investryx_dev_migrate_db:
     container_name: investryx_dev_migrate_db
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend-dev:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend-dev:latest-dev
     command: >
       bash -c "
       /app/venv/bin/python3 manage.py makemigrations --noinput &&
@@ -99,8 +79,6 @@ services:
       "
     env_file:
       - .env.dev
-    # volumes:
-    #  - .:/app  # Added for development
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -110,17 +88,14 @@ services:
 
   investryx_dev_migrate_setup:
     container_name: investryx_dev_migrate_setup
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend-dev:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/investryx-backend-dev:latest-dev
     command: >
       bash -c "
       /app/venv/bin/python3 manage.py create_superuser &&
-      /app/venv/bin/python3 manage.py collectstatic --noinput &&
-      /app/venv/bin/python3 manage.py loaddata initial_dev_data.json  # Added for development data
+      /app/venv/bin/python3 manage.py collectstatic --noinput
       "
     env_file:
       - .env.dev
-    # volumes:
-    #   - .:/app  # Added for development
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -131,6 +106,3 @@ services:
 networks:
   investryx_dev_network:
     driver: bridge
-
-volumes:
-  redis_dev_data:  # Added for development data persistence
