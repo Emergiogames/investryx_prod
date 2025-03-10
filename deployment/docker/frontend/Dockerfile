@@ -16,6 +16,9 @@ COPY ./src/frontend/ ./
 # Build the frontend app
 RUN npm run build
 
+# Verify that the build output exists
+RUN ls -l /app/dist
+
 # Use lightweight Nginx to serve the built app
 FROM nginx:alpine
 
@@ -25,8 +28,8 @@ WORKDIR /usr/share/nginx/html
 # Remove default Nginx static files
 RUN rm -rf ./*
 
-# Copy built frontend files from the build stage
-COPY --from=build /app/dist ./  # Fixed: changed /build to /dist
+# Ensure build output exists before copying
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Change ownership & permissions
 RUN chown -R nginx:nginx /usr/share/nginx/html \
