@@ -72,14 +72,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'roomId': data.get('roomId'),
             'token': data.get('token'),
             'sendedTo': recieved,
-            'duration': data.get('duration') if data.get('duration') else None,
             'sendedBy': self.user.id,
+            'duration': data.get('duration') if data.get('duration') else None,
             'time': str(created),
             'seen':self.chat.seen
         }
 
         ## Send Message
-        room_group_name = f"user_chatroom_{data.get('roomId')}"
+        room_group_name = f'user_chatroom_{data.get('roomId')}'
         await self.channel_layer.group_send(
             room_group_name,
             {
@@ -90,7 +90,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         ## Update Room Data
         await self.channel_layer.group_send(
-            f"user_{self.user.id}",
+            f'user_{self.user.id}',
             {
                 'type': 'room_message',
                 'room_data': room_data
@@ -131,7 +131,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         room.last_msg = encrypt_message(msg)
         
         if audio:
-            filename = f"audio_{self.user.username}_{time}.m4a"
+            filename = f'audio_{self.user.username}_{time}.m4a'
             decoded_audio = base64.b64decode(audio)
             audio_file = ContentFile(decoded_audio, name=filename)
             self.chat.audio.save(filename, audio_file, save=True)

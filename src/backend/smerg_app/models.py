@@ -3,6 +3,7 @@ from django.contrib.auth.models import *
 import random, string
 from django.utils import timezone
 from custom_storages import MediaStorage
+from django.utils.timezone import now
 
 class CustomUserManager(UserManager):
     def create_user(self, username, email=None, password=None, **extra_fields):
@@ -77,7 +78,6 @@ class SaleProfiles(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     impressions = models.IntegerField(default=0)
-    created_at = models.DateField(auto_now=True, null=True)
 
     # Common fields
     industry = models.CharField(max_length=100, null=True, blank=True)
@@ -130,15 +130,12 @@ class SaleProfiles(models.Model):
     staff = models.IntegerField(null=True, blank=True)
 
     # Advisor-specific fields
-    interested_in = models.JSONField(null=True, blank=True)
-    role = models.CharField(max_length=100, null=True, blank=True)
+    number = models.CharField(max_length=17, blank=True, null=True)
+    email = models.EmailField(max_length=254, blank=True, null=True)
+    interest = models.CharField(max_length=500, blank=True, null=True)
     designation = models.CharField(max_length=100, null=True, blank=True)
-    interested_industry = models.JSONField(null=True, blank=True)
-    interested_location = models.JSONField(null=True, blank=True)
-    yr_experiance = models.IntegerField(null=True, blank=True)
-    factors_looking = models.TextField(null=True, blank=True)
-    about_company = models.TextField(null=True, blank=True)
-    
+    experience = models.CharField(null=True, blank=True, max_length=100)
+
     # Common file fields
     profile = models.FileField(storage=MediaStorage(), upload_to='combined/images/profile', null=True, blank=True)
     logo = models.FileField(storage=MediaStorage(), upload_to='combined/images', null=True, blank=True)
@@ -196,9 +193,11 @@ class Suggestion(models.Model):
 
 # Testimonials
 class Testimonial(models.Model):
-    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
-    company = models.CharField(max_length=1000)
-    testimonial = models.TextField()
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    advisor = models.ForeignKey(SaleProfiles, on_delete=models.CASCADE, null=True, blank=True)
+    rate = models.IntegerField(default=0)
+    testimonial = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now=True)
 
 # Log of datas
 class ActivityLog(models.Model):
@@ -268,7 +267,7 @@ class Plan(models.Model):
     ]
 
     name = models.CharField(max_length=100)
-    rate = models.CharField(max_length=500)
+    rate = models.IntegerField(default=0)
     description = models.JSONField()
     time_period = models.IntegerField(default=0)
     post_number = models.IntegerField()

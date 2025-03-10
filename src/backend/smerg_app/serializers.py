@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import *
 from django.utils import timezone  
+from django.utils.timezone import localtime
 
 class UserSerial(serializers.ModelSerializer):
     class Meta:
@@ -14,10 +15,18 @@ class SaleProfilesSerial(serializers.ModelSerializer):
         fields = '__all__'
 
     def update(self, instance, validated_data):
-        # Exclude 'verified' from user updates
-        validated_data.pop('verified', None)  # Remove verified from any user input
-        instance.verified = False  # Force set to False on updates
+        validated_data.pop('verified', None) 
+        instance.verified = False
         return super().update(instance, validated_data)
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if 'listed_on' in data and instance.listed_on:
+            utc_time = instance.listed_on
+            local_time = localtime(utc_time)
+            data['listed_on'] = local_time.strftime('%Y-%m-%d %H:%M:%S')
+            # data['listed_on'] = localtime(instance.listed_on).strftime('%Y-%m-%d %H:%M:%S')
+        return data
 
 class WishlistSerial(serializers.ModelSerializer):
     class Meta:
@@ -40,6 +49,8 @@ class SuggestSerial(serializers.ModelSerializer):
         fields = '__all__'
 
 class TestSerial(serializers.ModelSerializer):
+    user = UserSerial()
+    
     class Meta:
         model = Testimonial
         fields = '__all__'
