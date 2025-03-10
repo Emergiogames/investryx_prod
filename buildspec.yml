@@ -18,10 +18,8 @@ phases:
       - git pull origin main
       - COMMIT_HASH=$(git rev-parse --short HEAD)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
+      # Removing the repository creation check that's causing the error
       
-      # Create frontend ECR repository if it doesn't exist
-      - aws ecr describe-repositories --repository-names investryx-frontend || aws ecr create-repository --repository-name investryx-frontend --region $AWS_DEFAULT_REGION
-
   build:
     commands:
       - echo Build started on `date`
@@ -30,7 +28,7 @@ phases:
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
       - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest
       
-      # Build and tag frontend image with both commit hash and latest
+      # Build and tag frontend image with both commit hash and latest - keeping this section
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-frontend:$IMAGE_TAG -f deployment/docker/frontend/Dockerfile .
       - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-frontend:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-frontend:latest
       
