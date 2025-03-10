@@ -26,7 +26,7 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 # Copy built frontend files from the build stage
-COPY --from=build /app/build ./  # Change /build to /dist if using Vite
+COPY --from=build /app/dist ./  # Fixed: changed /build to /dist
 
 # Change ownership & permissions
 RUN chown -R nginx:nginx /usr/share/nginx/html \
