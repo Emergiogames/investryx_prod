@@ -11,7 +11,7 @@ RUN mkdir -p /var/log/nginx
 WORKDIR /usr/share/nginx/html
 
 # Copy the frontend build files into the NGINX HTML directory
-COPY src/frontend/dist/ /usr/share/nginx/html/
+COPY dist/ /usr/share/nginx/html/
 
 # Copy custom NGINX configuration
 COPY nginx.conf /etc/nginx/nginx.conf
