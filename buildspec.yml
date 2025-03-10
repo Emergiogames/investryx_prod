@@ -18,10 +18,8 @@ phases:
       - git pull origin main
       - COMMIT_HASH=$(git rev-parse --short HEAD)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
+      # Removed repository creation check that was causing errors
       
-      # Create frontend ECR repository if it doesn't exist
-      - aws ecr describe-repositories --repository-names investryx-frontend || aws ecr create-repository --repository-name investryx-frontend --region $AWS_DEFAULT_REGION
-
   build:
     commands:
       - echo Build started on `date`
