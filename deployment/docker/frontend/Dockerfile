@@ -1,5 +1,5 @@
-# Use lightweight Nginx image
-FROM nginx:alpine
+# Use Amazon ECR public gallery for nginx image
+FROM public.ecr.aws/nginx/nginx:alpine
 
 # Set working directory in Nginx container
 WORKDIR /usr/share/nginx/html
