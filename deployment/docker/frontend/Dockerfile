@@ -1,29 +1,41 @@
-# Build stage
-FROM node:16-alpine as build
+# Use Node.js 18 (or later) for building
+FROM node:18-alpine AS build
 
+# Set working directory
 WORKDIR /app
 
-# Copy package.json first (create it if it doesn't exist)
-COPY ./src/frontend/package.json ./src/frontend/package-lock.json* ./
-# If package.json doesn't exist yet, create a basic one
-RUN if [ ! -f package.json ]; then \
-    echo '{ "name": "investryx-frontend", "version": "1.0.0", "private": true, "scripts": { "start": "react-scripts start", "build": "react-scripts build" }, "dependencies": { "react": "^18.2.0", "react-dom": "^18.2.0", "react-router-dom": "^6.10.0", "react-scripts": "5.0.1" } }' > package.json; \
-    fi
+# Copy package.json and package-lock.json first for caching
+COPY ./src/frontend/package.json ./src/frontend/package-lock.json ./ 
 
 # Install dependencies
-RUN npm install
+RUN npm install --only=production
 
-# Copy source files
+# Copy the entire frontend source code
 COPY ./src/frontend/ ./
 
-# Build the application
+# Build the React app
 RUN npm run build
 
-# Final production image
+# Use lightweight Nginx for serving the built application
 FROM nginx:alpine
 
-# Copy built files from build stage
-COPY --from=build /app/build /usr/share/nginx/html
+# Set working directory in Nginx container
+WORKDIR /usr/share/nginx/html
 
-# Default command
+# Remove default Nginx static files
+RUN rm -rf ./*
+
+# Copy built files from the build stage
+COPY --from=build /app/build ./
+
+# Change ownership to non-root user
+RUN chown -R nginx:nginx /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Set user to non-root
+USER nginx
+
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
