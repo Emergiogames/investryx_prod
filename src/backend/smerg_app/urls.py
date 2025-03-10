@@ -18,6 +18,7 @@ urlpatterns = [
     path('franchise<int:id>', FranchiseList.as_view()), # Franchise
     path('advisor', AdvisorList.as_view()), # Advisor
     path('advisor<int:id>', AdvisorList.as_view()), # Advisor
+    path('edit_posts<int:id>', EditPosts.as_view()), # Edit posts
     path('contact', Contact.as_view()), # Contact Us
     path('search', Search.as_view()), # Search
     path('user', UserView.as_view()), # User information
@@ -32,6 +33,7 @@ urlpatterns = [
     path('prefer', Prefer.as_view()),
     path('prefer/<int:id>', Prefer.as_view()), # Preferred
     path('plans', Plans.as_view()), # Plans
+    path('order_fetch', RazorOrder.as_view()), # Razor Pay order
     path('subscribe', Subscribe.as_view()), # Subscriptions
     path('recommended', Recommended.as_view()), # Recommended Posts
     path('featured', Featured.as_view()), # Featured Posts
@@ -43,8 +45,8 @@ urlpatterns = [
     path('onesignal', OneSignal.as_view()), # OneSignal Id updating
     path('popularsearch', Popularsearch.as_view()), #popular searched posts
     path('popularsearch<int:id>', Popularsearch.as_view()),# popular searched posts
-    path('recentsearchview', RecentSearchview.as_view()), #recently viewed posts
-    path('recentsearchview<int:id>', RecentSearchview.as_view()),# recently viewed posts
+    # path('recentsearchview', RecentSearchview.as_view()), #recently viewed posts
+    # path('recentsearchview<int:id>', RecentSearchview.as_view()),# recently viewed posts
     path('report', ReportPost.as_view()), # Report the post
     path('recent_enquiries', RecentEnquiries.as_view()), # recent enquiries
     path('count_enquiries', EnquiriesCounts.as_view()), # count of recent enquires

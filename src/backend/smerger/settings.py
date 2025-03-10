@@ -178,39 +178,36 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-# Internationalization
 LANGUAGE_CODE = 'en-us'
+
 TIME_ZONE = 'Asia/Kolkata'
+
 USE_I18N = True
+
 USE_TZ = True
+
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
-# AWS Configuration
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = "ap-south-1"
+AWS_S3_REGION_NAME="ap-south-1"
 AWS_S3_CUSTOM_DOMAIN = config('AWS_S3_CUSTOM_DOMAIN')
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
-AWS_LOCATION = 'static'
-AWS_DEFAULT_ACL = None
-AWS_S3_FILE_OVERWRITE = False
+AWS_S3_URL_PROTOCOL = 'https:'
+AWS_S3_USE_SSL = True
+AWS_S3_VERIFY = True
+AWS_S3_SIGNATURE_VERSION = 's3v4'
 AWS_QUERYSTRING_AUTH = False
+AWS_S3_ENCRYPTION = True
+AWS_S3_SERVER_SIDE_ENCRYPTION = 'AES256'
 
-# URLs for static and media
-STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
-
-# Storage Configuration
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
         "OPTIONS": {
             "bucket_name": config('AWS_STORAGE_BUCKET_NAME'),
-            "location": "media",
-            "default_acl": None,
+            "location": "media/",
+            "default_acl": "private",
             "file_overwrite": False
         }
     },
@@ -218,8 +215,26 @@ STORAGES = {
         "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
         "OPTIONS": {
             "bucket_name": config('AWS_STORAGE_BUCKET_NAME'),
-            "location": "static",
-            "default_acl": None
+            "location": "static/",
+            "default_acl": "private"
         }
     }
 }
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+STATIC_ROOT = None
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+MEDIA_URL = f'{AWS_S3_CUSTOM_DOMAIN}/media/'
+MEDIA_ROOT = None
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# STATIC_URL = 'static/'
+
+# MEDIA_ROOT=BASE_DIR/'uploads'
+# MEDIA_URL='/media/'
