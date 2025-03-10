@@ -60,3 +60,4 @@ artifacts:
     - imageDefinitions.json
     - docker-compose.yml
     - appspec.yml
+    
