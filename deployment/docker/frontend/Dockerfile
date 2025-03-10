@@ -1,14 +1,10 @@
-# Build stage
-FROM node:16-alpine as build
+# Use Node.js 18 (or later) instead of Node.js 16
+FROM node:18-alpine as build
 
 WORKDIR /app
 
-# Copy package.json first (create it if it doesn't exist)
+# Copy package.json and package-lock.json
 COPY ./src/frontend/package.json ./src/frontend/package-lock.json* ./
-# If package.json doesn't exist yet, create a basic one
-RUN if [ ! -f package.json ]; then \
-    echo '{ "name": "investryx-frontend", "version": "1.0.0", "private": true, "scripts": { "start": "react-scripts start", "build": "react-scripts build" }, "dependencies": { "react": "^18.2.0", "react-dom": "^18.2.0", "react-router-dom": "^6.10.0", "react-scripts": "5.0.1" } }' > package.json; \
-    fi
 
 # Install dependencies
 RUN npm install
@@ -19,10 +15,10 @@ COPY ./src/frontend/ ./
 # Build the application
 RUN npm run build
 
-# Final production image
+# Use Nginx for serving the built files
 FROM nginx:alpine
 
-# Copy built files from build stage
+# Copy built files from the build stage
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Default command
