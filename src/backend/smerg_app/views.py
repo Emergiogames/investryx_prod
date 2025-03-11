@@ -483,7 +483,7 @@ class FranchiseList(APIView):
                 state = data.get('state', '...')
                 offering = data.get('offering', 'Offering')
                 data['title'] = f"{industry} {offering} in {state}"
-                data['single_desc'] = f"{data.get("company", "Company")}, Established in {data.get("establish_yr", "2000")}, {data.get("total_outlets", "1")} Franchises, {state}"
+                data['single_desc'] = f'{data.get("company", "Company")}, Established in {data.get("establish_yr", "2000")}, {data.get("total_outlets", "1")} Franchises, {state}'
                 subscribed = await check_subscription(user, "franchise")
                 if subscribed:
                     data['subscribed'] = True
