@@ -89,7 +89,7 @@ class RegisterOtp(APIView):
             if exists or email_exists:
                 return Response({'status':False,'message': 'User with same phone number/email id already exist'}, status=status.HTTP_403_FORBIDDEN)
             otp = random.randint(1111,9999)
-            key = f'otp_{request.data.get('phone')}'
+            key = f"otp_{request.data.get('phone')}"
             cache_value = await sync_to_async(cache.get)(key)
             if not cache_value:
                 await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=30)
@@ -102,7 +102,7 @@ class RegisterView(APIView):
     @swagger_auto_schema(operation_description="User creation for an organisation",request_body=UserSerial,
     responses={200: "{'status':True,'message': 'User created successfully'}",400:"Passes an error message"})
     async def post(self,request):
-        key = f'otp_{request.data.get('phone')}'
+        key = f"otp_{request.data.get('phone')}"
         @sync_to_async()
         def get_cache_value(key):
             return cache.get(key)
@@ -133,7 +133,7 @@ class RegisterView(APIView):
                             async with session.get(request.data.get('images')) as response:
                                 if response.status == 200:
                                     content = await response.read()
-                                    await sync_to_async(user.image.save)(f'{user.username}_profile.jpg', ContentFile(content))
+                                    await sync_to_async(user.image.save)(f"{user.username}_profile.jpg", ContentFile(content))
                     return Response({'status':True,'token':token.key}, status=status.HTTP_201_CREATED)
                 return Response(user)
             return Response({'status':False,'message': 'Incorrect OTP'}, status=status.HTTP_400_BAD_REQUEST)
@@ -149,7 +149,7 @@ class ForgotPwd(APIView):
         exists, user = await check_exists(request.data.get('number'))
         if exists and not user.block:
             otp = random.randint(0000,9999)
-            key = f'otp_{request.data.get('number')}'
+            key = f"otp_{request.data.get('number')}"
             cache_value = await sync_to_async(cache.get)(key)
             if not cache_value:
                 await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=30)
@@ -166,7 +166,7 @@ class OTPConfirm(APIView):
     async def post(self,request):
         exists, user = await check_exists(request.data.get('phone'))
         if exists and not user.block:
-            key = f'otp_{request.data.get('phone')}'
+            key = f"otp_{request.data.get('phone')}"
             stored_otp = await cache.aget(key)
             if stored_otp:
                 if int(stored_otp) == int(request.data.get('otp')):
@@ -310,7 +310,7 @@ class BusinessList(APIView):
                 sale = data.get('type_sale', 'sale')
                 city = data.get('city', '...')
                 state = data.get('state', '...')
-                data['title'] = f'{industry} for {sale} in {city}, {state}'
+                data['title'] = f"{industry} for {sale} in {city}, {state}"
                 subscribed = await check_subscription(user, "business")
                 if subscribed:
                     data['subscribed'] = True
@@ -407,7 +407,7 @@ class InvestorList(APIView):
                 preference_list = json.loads(data.get("preference"))
                 first_preference = preference_list[0] if preference_list else "Investment"
                 data["title"] = f"{industry}, {first_preference}, {city}, {state}"
-                data["single_desc"] = f'{first_preference} in {city}, {state}'
+                data["single_desc"] = f"{first_preference} in {city}, {state}'
                 subscribed = await check_subscription(user, "investor")
                 if subscribed:
                     data['subscribed'] = True
@@ -482,8 +482,8 @@ class FranchiseList(APIView):
                 industry = data.get('industry', 'industry')
                 state = data.get('state', '...')
                 offering = data.get('offering', 'Offering')
-                data['title'] = f'{industry} {offering} in {state}'
-                data['single_desc'] = f'{data.get("company", "Company")}, Established in {data.get("establish_yr", "2000")}, {data.get("total_outlets", "1")} Franchises, {state}'
+                data['title'] = f"{industry} {offering} in {state}"
+                data['single_desc'] = f"{data.get("company", "Company")}, Established in {data.get("establish_yr", "2000")}, {data.get("total_outlets", "1")} Franchises, {state}'
                 subscribed = await check_subscription(user, "franchise")
                 if subscribed:
                     data['subscribed'] = True
@@ -559,7 +559,7 @@ class AdvisorList(APIView):
                 city = data.get('city', '...')
                 state = data.get('state', '...')
                 data['title'] = f"{data.get('designation', 'Advisor')}, Financial Advisor, {data.get('city', '...')}, {data.get('state', '...')}"
-                data['single_desc'] = f'Advisor in {data.get("city", "...")}, {data.get("state", "...")}'
+                data['single_desc'] = f"Advisor in {data.get("city", "...")}, {data.get("state", "...")}'
                 subscribed = await check_subscription(user, "advisor")
                 if subscribed:
                     data['subscribed'] = True
@@ -1120,7 +1120,7 @@ class Subscribe(APIView):
                         await subscribe.asave()
                         return Response({'status':True}, status=status.HTTP_200_OK)
                     else:
-                        return Response({'status':False,'message': f'Transaction not found {payment_details}' })
+                        return Response({'status':False,'message': f"Transaction not found {payment_details}" })
                 return Response({'status':False,'message': 'Plan doesnot exist'}, status=status.HTTP_400_BAD_REQUEST)
             return Response({'status':False,'message': 'User doesnot exist'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'status':False,'message': 'Token is not passed'}, status=status.HTTP_401_UNAUTHORIZED)
