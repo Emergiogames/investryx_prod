@@ -79,7 +79,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }
 
         ## Send Message
-        room_group_name = f'user_chatroom_{data.get('roomId')}'
+        room_group_name = f'user_chatroom_{data.get("roomId")}'
         await self.channel_layer.group_send(
             room_group_name,
             {
