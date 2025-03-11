@@ -559,7 +559,7 @@ class AdvisorList(APIView):
                 city = data.get('city', '...')
                 state = data.get('state', '...')
                 data['title'] = f"{data.get('designation', 'Advisor')}, Financial Advisor, {data.get('city', '...')}, {data.get('state', '...')}"
-                data['single_desc'] = f"Advisor in {data.get("city", "...")}, {data.get("state", "...")}"
+                data['single_desc'] = f'Advisor in {data.get("city", "...")}, {data.get("state", "...")}'
                 subscribed = await check_subscription(user, "advisor")
                 if subscribed:
                     data['subscribed'] = True
