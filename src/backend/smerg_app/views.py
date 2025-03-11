@@ -407,7 +407,7 @@ class InvestorList(APIView):
                 preference_list = json.loads(data.get("preference"))
                 first_preference = preference_list[0] if preference_list else "Investment"
                 data["title"] = f"{industry}, {first_preference}, {city}, {state}"
-                data["single_desc"] = f"{first_preference} in {city}, {state}'
+                data["single_desc"] = f"{first_preference} in {city}, {state}"
                 subscribed = await check_subscription(user, "investor")
                 if subscribed:
                     data['subscribed'] = True
