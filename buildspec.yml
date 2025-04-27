@@ -21,13 +21,13 @@ phases:
       - git checkout main
       - git pull origin main
       - TAG_DATE=$(date +"%Y%m%d")
+      - cd ..
   build:
     commands:
-      - cd investryx_prod
       - echo "Building backend image with tag $TAG_DATE"
-      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$TAG_DATE -f deployment/docker/backend/Dockerfile . --push
+      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$TAG_DATE -f investryx_prod/deployment/docker/backend/Dockerfile investryx_prod --push
       - echo "Building nginx image with tag $TAG_DATE"
-      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$TAG_DATE -f deployment/docker/nginx/Dockerfile deployment/docker/nginx --push
+      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$TAG_DATE -f investryx_prod/deployment/docker/nginx/Dockerfile investryx_prod/deployment/docker/nginx --push
       - echo "Pulling and tagging Redis image"
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
       - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$TAG_DATE
