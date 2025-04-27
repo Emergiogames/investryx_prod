@@ -1,11 +1,9 @@
 version: 0.2
-
 env:
   variables:
     AWS_DEFAULT_REGION: "ap-south-1"
     AWS_ACCOUNT_ID: "459858848469"
     ENV: "prod"
-
 phases:
   pre_build:
     commands:
@@ -16,48 +14,47 @@ phases:
       - cd investryx_prod
       - git checkout main
       - git pull origin main
-      - COMMIT_HASH=$(git rev-parse --short HEAD)
-      - IMAGE_TAG=${COMMIT_HASH:=latest}
-
+      
+      # Generate date-based tag in the format YYYYMMDD
+      - DATE_TAG=$(date +"%Y%m%d")
+      
+      # Check for existing images with today's date to determine pull number
+      - echo Checking for existing images with today\'s date...
+      - EXISTING_IMAGES=$(aws ecr describe-images --repository-name investryx-backend --query "imageDetails[?contains(imageTags, '${DATE_TAG}*')].imageTags" --output text || echo "")
+      - PULL_COUNT=1
+      - if [ ! -z "$EXISTING_IMAGES" ]; then
+      -   MAX_PULL=$(echo $EXISTING_IMAGES | tr ' ' '\n' | grep $DATE_TAG | sed "s/$DATE_TAG//" | sort -n | tail -1 || echo "0")
+      -   PULL_COUNT=$((MAX_PULL + 1))
+      - fi
+      - PULL_NUM=$(printf "%02d" $PULL_COUNT)
+      - IMAGE_TAG="${DATE_TAG}${PULL_NUM}"
+      - echo "Using image tag: $IMAGE_TAG"
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker images...
-      # Build and tag backend image with both commit hash and latest
+      # Build backend image with date-based tag only
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest
       
-      # Build and tag nginx image with both commit hash and latest
+      # Build nginx image with date-based tag only
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:latest
       
-      # Pull and tag Redis image with both commit hash and latest
+      # Pull and tag Redis image with date-based tag only
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
       - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
-
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      # Push backend images (both tags)
+      # Push only the date-tagged images
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest
-      
-      # Push nginx images (both tags)
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:latest
-      
-      # Push redis images (both tags)
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
       
       - echo Writing image definitions file...
       - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
-
 artifacts:
   files:
     - imageDefinitions.json
     - docker-compose.yml
     - appspec.yml
-    
