@@ -5,34 +5,37 @@ env:
     AWS_ACCOUNT_ID: "459858848469" 
     ENV: "prod"
 phases:
+  install:
+    commands:
+      - echo Installing Buildx...
+      - mkdir -p ~/.docker/cli-plugins
+      - curl -SL https://github.com/docker/buildx/releases/download/v0.12.0/buildx-v0.12.0.linux-amd64 -o ~/.docker/cli-plugins/docker-buildx
+      - chmod +x ~/.docker/cli-plugins/docker-buildx
+      - docker buildx create --use
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - echo Pulling latest changes from Git repository...
       - git clone https://github.com/Emergiogames/investryx_prod.git
       - cd investryx_prod
       - git checkout main
       - git pull origin main
-      - IMAGE_TAG=$(date +"%Y%m%d%H%M%S")
-      - echo "Using image tag: $IMAGE_TAG"
+      - TAG_DATE=$(date +"%Y%m%d")
   build:
     commands:
-      - echo Build started on `date`
-      - echo Building the Docker images...
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
+      - cd investryx_prod
+      - echo "Building backend image with tag $TAG_DATE"
+      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$TAG_DATE -f deployment/docker/backend/Dockerfile . --push
+      - echo "Building nginx image with tag $TAG_DATE"
+      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$TAG_DATE -f deployment/docker/nginx/Dockerfile deployment/docker/nginx --push
+      - echo "Pulling and tagging Redis image"
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
-      - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
+      - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$TAG_DATE
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$TAG_DATE
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker images...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
       - echo Writing image definitions file...
-      - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
+      - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$TAG_DATE > imageDefinitions.json
 artifacts:
   files:
     - imageDefinitions.json
