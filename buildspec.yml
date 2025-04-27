@@ -14,13 +14,7 @@ phases:
       - cd investryx_prod
       - git checkout main
       - git pull origin main
-      - DATE_TAG=$(date +"%Y%m%d")
-      - echo Checking for existing images with today\'s date...
-      - EXISTING_IMAGES=$(aws ecr describe-images --repository-name investryx-backend --query "imageDetails[?contains(imageTags, '${DATE_TAG}*')].imageTags" --output text || echo "")
-      - PULL_COUNT=1
-      - "if [ ! -z \"$EXISTING_IMAGES\" ]; then MAX_PULL=$(echo $EXISTING_IMAGES | tr ' ' '\n' | grep $DATE_TAG | sed \"s/$DATE_TAG//\" | sort -n | tail -1 || echo \"0\"); PULL_COUNT=$((MAX_PULL + 1)); fi"
-      - PULL_NUM=$(printf "%02d" $PULL_COUNT)
-      - IMAGE_TAG="${DATE_TAG}${PULL_NUM}"
+      - IMAGE_TAG=$(date +"%Y%m%d%H%M%S")
       - echo "Using image tag: $IMAGE_TAG"
   build:
     commands:
