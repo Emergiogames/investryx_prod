@@ -17,11 +17,11 @@ phases:
       - git checkout main
       - git pull origin main
       - COMMIT_HASH=$(git rev-parse --short HEAD)
-      - IMAGE_TAG=${COMMIT_HASH:-latest}
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
 
   build:
     commands:
-      - echo Build started on `date`
+      - echo Build started on $(date)
       - echo Building the Docker images...
 
       # Build and tag backend image
@@ -39,7 +39,7 @@ phases:
 
   post_build:
     commands:
-      - echo Build completed on `date`
+      - echo Build completed on $(date)
       - echo Pushing the Docker images...
 
       # Push backend images
@@ -55,10 +55,10 @@ phases:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
 
       - echo Writing image definitions file...
-      - printf '[{"name":"investryx-backend","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imagedefinitions.json
+      - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
 
 artifacts:
   files:
-    - imagedefinitions.json
+    - imageDefinitions.json
     - docker-compose.yml
     - appspec.yml
