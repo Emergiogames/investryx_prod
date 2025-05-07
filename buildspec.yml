@@ -55,12 +55,8 @@ phases:
       
       - echo Writing image definitions file...
       - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
-      - cp appspec.yml ./
-      - cp docker-compose.yml ./
 
 artifacts:
   files:
     - imageDefinitions.json
-    - docker-compose.yml
-    - appspec.yml
   discard-paths: yes
