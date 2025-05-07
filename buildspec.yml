@@ -16,10 +16,9 @@ phases:
       - cd investryx_prod
       - git checkout main
 
-      # Generate custom image tag: ddmmyyyyNN (here NN is CodeBuild build ID or time)
+      # Generate custom image tag: ddmmyyyyNN (where NN is the build number)
       - BUILD_DATE=$(date +%d%m%Y)
-      - BUILD_TIME=$(date +%H%M)  # Optional: or use $CODEBUILD_BUILD_NUMBER
-      - IMAGE_TAG="${BUILD_DATE}${BUILD_TIME}"  # e.g., 070520250945
+      - IMAGE_TAG="${BUILD_DATE}${CODEBUILD_BUILD_NUMBER}"  # Example: 0705202501, 0705202502, etc.
       - echo "Using image tag: $IMAGE_TAG"
 
       # Enable buildx
