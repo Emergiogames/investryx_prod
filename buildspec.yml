@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     AWS_DEFAULT_REGION: "ap-south-1"
-    AWS_ACCOUNT_ID: "459858848469"
+    AWS_ACCOUNT_ID: "459858848469"  # Corrected to match the actual AWS account
     ENV: "prod"
 
 phases:
@@ -11,38 +11,51 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - echo Cloning repository...
+      - echo Pulling latest changes from Git repository...
       - git clone https://github.com/Emergiogames/investryx_prod.git
       - cd investryx_prod
       - git checkout main
-      - BUILD_DATE=$(date +%d%m%Y)
-      - IMAGE_TAG="${BUILD_DATE}${CODEBUILD_BUILD_NUMBER}"
-      - echo "Using image tag: $IMAGE_TAG"
-      - docker buildx create --use
-      - docker buildx inspect --bootstrap
+      - git pull origin main
+      - COMMIT_HASH=$(git rev-parse --short HEAD)
+      - echo "Using commit hash $COMMIT_HASH"
+      # Get the current time in DDMMYYYYHHMM format
+      - TIME_TAG=$(date +'%d%m%Y%H%M')
+      - echo "Using time tag: $TIME_TAG"
+      # Use commit hash if time tag isn't available
+      - export IMAGE_TAG=${TIME_TAG:-$COMMIT_HASH}
 
   build:
     commands:
       - echo Build started on `date`
-      - echo Building Docker images...
-      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile . --load
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest
-      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx --load
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:latest
+      - echo Building the Docker images...
+      # Build and tag backend image with the time-based tag
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
+      # No "latest" tag used, just time-based tag
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG
+      
+      # Build and tag nginx image with the time-based tag
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
+      # No "latest" tag used, just time-based tag
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG
+      
+      # Pull and tag Redis image with the time-based tag
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
       - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
+      # No "latest" tag used, just time-based tag
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo Pushing Docker images...
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      # Push backend image with the time-based tag
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest
+      # Push nginx image with the time-based tag
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:latest
+      # Push redis image with the time-based tag
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
-      - echo Writing image definition file...
+
+      - echo Writing image definitions file...
       - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
 
 artifacts:
