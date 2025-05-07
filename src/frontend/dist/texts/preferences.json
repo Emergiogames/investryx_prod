@@ -1,0 +1,170 @@
+
+
+{
+  "common_questions": [
+    {
+      "question0": "What is your primary objective for using our platform?",
+      "options0": [
+        "Investment opportunities",
+        "Selling a business",
+        "Finding franchises",
+        "Offering advisory services"
+      ]
+    },
+    {
+      "question1": "What industries are you most interested in or associated with?",
+      "options1": [
+        "Healthcare & Pharmaceuticals",
+        "Finance & Banking",
+        "Retail & E-commerce",
+        "Manufacturing & Industrial",
+        "Real Estate & Construction",
+        "Food & Beverage",
+        "Education & Training",
+        "Automotive & Transportation",
+        "Hospitality & Tourism",
+        "Energy & Utilities",
+        "Media & Entertainment",
+        "Telecommunications",
+        "Agriculture & Farming",
+        "Logistics & Supply Chain",
+        "Consumer Goods",
+        "Non-Profit & Social Services",
+        "Legal Services",
+        "Sports & Recreation",
+        "Marketing & Advertising",
+        "Others"
+      ]
+    },
+    {
+      "question2": "What is your preferred location or region of interest?"
+    },
+    {
+      "question3": "How often would you like to receive updates or recommendations?",
+      "options3": [
+        "Daily",
+        "Weekly",
+        "Monthly"
+      ]
+    }
+  ],
+
+
+  "profile_specific": {
+    "business": [
+      {
+        "question4": "What stage is your business currently in?",
+        "options4": ["Startup", "Growth", "Established", "Distressed"]
+      },
+      {
+        "question5": "What are your goals for listing your business?",
+        "options5": ["Attracting investors", "Selling the business", "Finding partners"]
+      },
+      {
+        "question6": "How long has your business been in operation? (In Years)"
+      }
+    ],
+    "investor": [
+      {
+        "question7": "What type of investments are you interested in?",
+        "options8": ["Equity", "Debt", "Real estate", "Franchises"]
+      },
+      {
+        "question8": "What is your preferred investment horizon?",
+        "options8": ["Short-Term", "Medium-Term", "Long-Term"]
+      },
+      {
+        "question9": "What is your risk tolerance level?",
+        "options9": ["Low", "Medium", "High"]
+      },
+      {
+        "question10": "Have you invested in similar industries or sectors before?",
+        "options10": ["Yes", "No"]
+      }
+    ],
+    "franchise": [
+      {
+        "question11": "Are you looking to buy a franchise or start your own?",
+        "options11": ["Buy", "Start"]
+      },
+      {
+        "question12": "What type of franchise interests you?",
+        "options12": [
+          "Food & Beverage",
+          "Retail",
+          "Health & Wellness",
+          "Education & Training",
+          "Automotive",
+          "Home Services",
+          "Pet Care",
+          "Childcare & Early Education",
+          "Real Estate",
+          "Logistics & Delivery",
+          "Hospitality & Travel",
+          "Business Services",
+          "Fitness & Sports",
+          "Beauty & Personal Care",
+          "Entertainment & Recreation",
+          "Franchise Resales"
+        ]
+      },
+      {
+        "question13": "What is your ideal investment budget for a franchise?",
+        "options13": [
+          "Under 50,000",
+          "50,000 - 100,000",
+          "1,00,000 - 2,50,000",
+          "2,50,000 - 5,00,000",
+          "5,00,000 - 1 Million",
+          "Over 1 Million",
+          "Flexible Budget"
+        ]},
+      {
+        "question15": "Are there specific franchise brands you are interested in? (enter with , inbetween)"
+      }
+    ],
+    "advisor": [
+      {
+        "question16": "What areas of expertise do you offer?",
+        "options16": [
+          "Business Strategy & Planning",
+          "Financial Planning & Analysis",
+          "Marketing & Branding",
+          "Sales & Business Development",
+          "Operations Management",
+          "Supply Chain & Logistics",
+          "Human Resources & Talent Management",
+          "Legal & Compliance",
+          "Technology & IT Consulting",
+          "Data Analytics & Business Intelligence",
+          "Project Management",
+          "Investment & Fundraising",
+          "Mergers & Acquisitions (M&A)",
+          "Product Development & Innovation",
+          "Customer Experience & Service",
+          "Sustainability & Corporate Social Responsibility (CSR)",
+          "Risk Management & Insurance",
+          "Public Relations (PR) & Communication",
+          "Quality Assurance & Control",
+          "Healthcare & Medical Advisory",
+          "Real Estate & Property Management",
+          "Government & Regulatory Affairs",
+          "Franchise Consulting",
+          "Education & Training Development",
+          "Crisis Management"
+        ]
+      },
+      {
+        "question17": "What types of clients are you most interested in working with?",
+        "options17": ["Startups", "Growing Business", "Large Enterprises"]
+      },
+      {
+        "question18": "How many years of experience do you have in your field?  (In Years)"
+      },
+      {
+        "question19": "Do you prefer providing short-term or long-term advisory services?",
+        "options19": ["Short-term", "Long-term"]
+      }
+    ]
+  }
+}
