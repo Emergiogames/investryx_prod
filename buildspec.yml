@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     AWS_DEFAULT_REGION: "ap-south-1"
-    AWS_ACCOUNT_ID: "459858848469"  # Corrected to match the actual AWS account
+    AWS_ACCOUNT_ID: "459858848469"
     ENV: "prod"
 
 phases:
@@ -16,24 +16,19 @@ phases:
       - cd investryx_prod
       - git checkout main
       - git pull origin main
-      - COMMIT_HASH=$(git rev-parse --short HEAD)
-      - echo "Using commit hash $COMMIT_HASH"
-      - TIME_TAG=$(date +'%d%m%Y%H%M')
-      - echo "Using time tag: $TIME_TAG"
-      - export IMAGE_TAG=${TIME_TAG:-$COMMIT_HASH}
-
+      - DATE_TAG=$(date +'%d%m%Y')
+      - echo "Using date tag: $DATE_TAG"
+      - export IMAGE_TAG=$DATE_TAG
+      
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker images...
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
       - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
-
+      
   post_build:
     commands:
       - echo Build completed on `date`
