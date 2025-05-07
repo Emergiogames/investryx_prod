@@ -4,6 +4,14 @@ env:
     AWS_DEFAULT_REGION: "ap-south-1"
     AWS_ACCOUNT_ID: "459858848469" 
     ENV: "prod"
+<<<<<<< HEAD
+=======
+  # Parameter store for tracking build counter
+  parameter-store:
+    BUILD_COUNTER: "/investryx/daily_build_counter"
+    LAST_BUILD_DATE: "/investryx/last_build_date"
+
+>>>>>>> develop
 phases:
   install:
     commands:
@@ -20,6 +28,7 @@ phases:
       - cd investryx_prod
       - git checkout main
       - git pull origin main
+<<<<<<< HEAD
       - TAG_DATE=$(date +"%Y%m%d")
       - cd ..
   build:
@@ -29,15 +38,62 @@ phases:
       - echo "Building nginx image with tag $TAG_DATE"
       - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$TAG_DATE -f investryx_prod/deployment/docker/nginx/Dockerfile investryx_prod/deployment/docker/nginx --push
       - echo "Pulling and tagging Redis image"
+=======
+      - COMMIT_HASH=$(git rev-parse --short HEAD)
+      
+      # Generate version based on date and build counter
+      - TODAY=$(date +"%Y%m%d")
+      - echo "Today's date: $TODAY"
+      - echo "Last build date: $LAST_BUILD_DATE"
+      
+      # If this is the first build of the day, reset counter to 01
+      - if [ "$TODAY" = "$LAST_BUILD_DATE" ]; then
+      -   BUILD_NUM=$(printf "%02d" $((10#$BUILD_COUNTER + 1)))
+      - else
+      -   BUILD_NUM="01"
+      - fi
+      
+      # Set the new image tag in format YYYYMMDDNN
+      - IMAGE_TAG="${TODAY}${BUILD_NUM}"
+      - echo "Using image tag: $IMAGE_TAG"
+      
+      # Store updated values back in parameter store
+      - aws ssm put-parameter --name "/investryx/daily_build_counter" --value $BUILD_NUM --type String --overwrite
+      - aws ssm put-parameter --name "/investryx/last_build_date" --value $TODAY --type String --overwrite
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker images...
+      # Build and tag backend image with both version tag and latest
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest
+      
+      # Build and tag nginx image with both version tag and latest
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:latest
+      
+      # Pull and tag Redis image with both version tag and latest
+>>>>>>> develop
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
       - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$TAG_DATE
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$TAG_DATE
   post_build:
     commands:
       - echo Writing image definitions file...
+<<<<<<< HEAD
       - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$TAG_DATE > imageDefinitions.json
+=======
+      - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
+      - echo "Successfully built and pushed images with tag: $IMAGE_TAG"
+
+>>>>>>> develop
 artifacts:
   files:
     - imageDefinitions.json
     - docker-compose.yml
+<<<<<<< HEAD
     - appspec.yml
+=======
+    - appspec.yml
+>>>>>>> develop
