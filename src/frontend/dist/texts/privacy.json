@@ -167,6 +167,43 @@
     "website": "https://www.investryx.com"
   }
 }
+,
+"account_deletion": {
+  "effective_date": "2024-06-17",
+  "last_updated": "2026-06-17",
+  "title": "Account and Page Deletion Policy",
+  "introduction": "This policy explains the process for deleting and canceling deletion of your Investryx Page under the new Pages experience.",
+  "deletion_conditions": {
+    "deletion_process": [
+      {
+        "requirement": "Access Level",
+        "description": "You must have Investryx access with full control of the Page to delete it."
+      },
+      {
+        "step": "Login and Navigation",
+        "description": "Log in to Investryx, click your profile photo in the top right, then select ' more ' button on left navigation to see option for delete."
+      },
+      {
+        "step": "Delete Page",
+        "description": "Select 'Delete Page', click 'Continue',and your account deletion process is completed."
+      }
+    ],
+    "deactivation_period": "Once you request deletion, the Page will be deactivated immediately but will not be permanently deleted until 12 days have passed.",
+    "reactivation": "If you decide to cancel the deletion within 12 days, you can reactivate your Page by sending a request mail with your mail-id to support@investryx.com"
+  },
+  "non_deletion_conditions": [
+    "You cannot delete a Page unless you have Investryx access with full control.",
+    "If you do not cancel the deletion within 12 days, the Page will be permanently deleted.",
+    "Deletion of a Page is separate from deletion of a personal Investryx account."
+  ],
+  "deletion_request_process": "Ensure you have full control access to the Page. Follow the steps mentioned above to request deletion. To cancel deletion, follow the reactivation steps within 12 days.",
+  "contact_information": {
+    "company_name": "EMERGIO GAMES PRIVATE LIMITED",
+     "email": "info@investryx.com",
+    "website": "https://www.investryx.com"
+  }
+}
+
 
 }
 
