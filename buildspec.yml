@@ -1,81 +1,64 @@
 version: 0.2
+
 env:
   variables:
     AWS_DEFAULT_REGION: "ap-south-1"
-    AWS_ACCOUNT_ID: "459858848469" 
+    AWS_ACCOUNT_ID: "140023367075"
     ENV: "prod"
-  parameter-store:
-    BUILD_COUNTER: "/investryx/daily_build_counter"
-    LAST_BUILD_DATE: "/investryx/last_build_date"
 
 phases:
-  install:
-    commands:
-      - echo Installing Buildx...
-      - mkdir -p ~/.docker/cli-plugins
-      - curl -SL https://github.com/docker/buildx/releases/download/v0.12.0/buildx-v0.12.0.linux-amd64 -o ~/.docker/cli-plugins/docker-buildx
-      - chmod +x ~/.docker/cli-plugins/docker-buildx
-      - docker buildx create --use
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo Pulling latest changes from Git repository...
       - git clone https://github.com/Emergiogames/investryx_prod.git
       - cd investryx_prod
       - git checkout main
       - git pull origin main
-      
-      # Generate version based on date and build counter
-      - TODAY=$(date +"%Y%m%d")
-      - echo "Today's date: $TODAY"
-      - echo "Last build date: $LAST_BUILD_DATE"
-      
-      # If this is the first build of the day, reset counter to 01
-      - if [ "$TODAY" = "$LAST_BUILD_DATE" ]; then
-      -   BUILD_NUM=$(printf "%02d" $((10#$BUILD_COUNTER + 1)))
-      - else
-      -   BUILD_NUM="01"
-      - fi
-      
-      # Set the new image tag in format YYYYMMDDNN
-      - IMAGE_TAG="${TODAY}${BUILD_NUM}"
-      - echo "Using image tag: $IMAGE_TAG"
-      
-      # Store updated values back in parameter store
-      - aws ssm put-parameter --name "/investryx/daily_build_counter" --value $BUILD_NUM --type String --overwrite
-      - aws ssm put-parameter --name "/investryx/last_build_date" --value $TODAY --type String --overwrite
-      - cd ..
-      
+      - COMMIT_HASH=$(git rev-parse --short HEAD)
+      - IMAGE_TAG=${COMMIT_HASH:-latest}
+
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker images...
-      # Build backend image with buildx for multi-platform support
-      - echo "Building backend image with tag $IMAGE_TAG"
-      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f investryx_prod/deployment/docker/backend/Dockerfile investryx_prod --push
-      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest -f investryx_prod/deployment/docker/backend/Dockerfile investryx_prod --push
-      
-      # Build nginx image with buildx for multi-platform support
-      - echo "Building nginx image with tag $IMAGE_TAG"
-      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f investryx_prod/deployment/docker/nginx/Dockerfile investryx_prod/deployment/docker/nginx --push
-      - docker buildx build --platform linux/amd64 -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:latest -f investryx_prod/deployment/docker/nginx/Dockerfile investryx_prod/deployment/docker/nginx --push
-      
-      # Pull and tag Redis image with both version tag and latest
+
+      # Build and tag backend image
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest
+
+      # Build and tag nginx image
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:latest
+
+      # Pull and tag Redis image
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
       - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
-      - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
-      
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
+
   post_build:
     commands:
       - echo Build completed on `date`
+      - echo Pushing the Docker images...
+
+      # Push backend images
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:latest
+
+      # Push nginx images
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:latest
+
+      # Push redis images
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:latest
+
       - echo Writing image definitions file...
-      - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
-      - echo "Successfully built and pushed images with tag: $IMAGE_TAG"
+      - printf '[{"name":"investryx-backend","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
-    - imageDefinitions.json
+    - imagedefinitions.json
     - docker-compose.yml
     - appspec.yml
