@@ -44,12 +44,22 @@ phases:
       - echo "📦 Installing frontend dependencies..."
       - |
         if [ -f "package-lock.json" ]; then
-          npm ci
+          npm ci --legacy-peer-deps
         else
-          npm install
+          npm install --legacy-peer-deps
         fi
+      - echo "🔍 Verifying installation..."
+      - npm list vite || echo "Vite not found, installing..."
+      - npm install --save-dev vite@latest --legacy-peer-deps
+      - echo "🔧 Clearing npm and node cache..."
+      - npm cache clean --force
+      - rm -rf node_modules/.cache
+      - echo "📋 Environment verification:"
+      - node --version
+      - npm --version
+      - npx vite --version
       - echo "🏗️ Building frontend application..."
-      - npx vite build
+      - npm run build
       - echo "✅ Frontend build completed"
       - cd ../..
       - echo "📁 Preparing nginx dist directory..."
@@ -57,9 +67,19 @@ phases:
       - echo "🧹 Cleaning existing nginx dist files..."
       - rm -rf deployment/docker/nginx/dist/*
       - echo "📋 Copying frontend dist files to nginx location..."
-      - cp -r src/frontend/dist/* deployment/docker/nginx/dist/
-      - echo "📊 Verifying copied files:"
-      - ls -la deployment/docker/nginx/dist/
+      - |
+        if [ -d "src/frontend/dist" ]; then
+          cp -r src/frontend/dist/* deployment/docker/nginx/dist/
+          echo "📊 Verifying copied files:"
+          ls -la deployment/docker/nginx/dist/
+        elif [ -d "src/frontend/build" ]; then
+          cp -r src/frontend/build/* deployment/docker/nginx/dist/
+          echo "📊 Verifying copied files (from build folder):"
+          ls -la deployment/docker/nginx/dist/
+        else
+          echo "❌ No dist or build folder found"
+          exit 1
+        fi
       - echo "🎉 Frontend build and copy completed successfully!"
       - echo "🐳 Building Docker images..."
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
