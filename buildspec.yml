@@ -8,11 +8,12 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 18
+      nodejs: 20
     commands:
-      - echo Using Node.js 18 with compatible npm version
+      - echo Using Node.js 20 with latest npm
       - node --version
       - npm --version
+      - npm install -g npm@latest
   pre_build:
     commands:
       - echo Logging in to Amazon ECR
@@ -47,27 +48,8 @@ phases:
         else
           npm install
         fi
-      - echo "🔍 Debugging: Checking installed packages"
-      - echo "Scripts in package.json:"
-      - cat package.json | grep -A 10 '"scripts"' || echo "No scripts section found"
-      - echo "Checking for Vite installation:"
-      - ls node_modules/.bin/ | grep vite || echo "Vite not found in .bin"
-      - npm list vite || echo "Vite not in npm list"
       - echo "🏗️ Building frontend application..."
-      - |
-        # Try multiple build approaches
-        if npm run build; then
-          echo "✅ Build successful with npm run build"
-        elif npx vite build; then
-          echo "✅ Build successful with npx vite build"
-        elif ./node_modules/.bin/vite build; then
-          echo "✅ Build successful with direct vite path"
-        else
-          echo "❌ All build attempts failed"
-          echo "Available scripts:"
-          npm run
-          exit 1
-        fi
+      - npx vite build
       - echo "✅ Frontend build completed"
       - cd ../..
       - echo "📁 Preparing nginx dist directory..."
@@ -75,19 +57,7 @@ phases:
       - echo "🧹 Cleaning existing nginx dist files..."
       - rm -rf deployment/docker/nginx/dist/*
       - echo "📋 Copying frontend dist files to nginx location..."
-      - |
-        if [ -d "src/frontend/dist" ]; then
-          cp -r src/frontend/dist/* deployment/docker/nginx/dist/
-          echo "✅ Files copied from src/frontend/dist/"
-        elif [ -d "src/frontend/build" ]; then
-          cp -r src/frontend/build/* deployment/docker/nginx/dist/
-          echo "✅ Files copied from src/frontend/build/"
-        else
-          echo "❌ Neither dist nor build directory found"
-          echo "Available directories in src/frontend:"
-          ls -la src/frontend/
-          exit 1
-        fi
+      - cp -r src/frontend/dist/* deployment/docker/nginx/dist/
       - echo "📊 Verifying copied files:"
       - ls -la deployment/docker/nginx/dist/
       - echo "🎉 Frontend build and copy completed successfully!"
