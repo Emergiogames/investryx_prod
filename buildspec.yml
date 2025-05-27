@@ -1,98 +1,83 @@
 version: 0.2
+
 env:
   variables:
     AWS_DEFAULT_REGION: ap-south-1
     AWS_ACCOUNT_ID: 459858848469
     ENV: prod
     NODE_ENV: production
+
 phases:
   install:
     runtime-versions:
       nodejs: 20
     commands:
-      - echo Using Node.js 20 with latest npm
-      - node --version
-      - npm --version
+      - echo "Installing latest npm"
       - npm install -g npm@latest
+
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR
+      - echo "Logging in to Amazon ECR"
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - echo Cloning repository
+
+      - echo "Cloning repository"
       - git clone https://github.com/Emergiogames/investryx_prod.git
       - cd investryx_prod
       - git checkout main
       - git pull origin main
+
       - export IMAGE_TAG=$(date +%d%m%Y)
-      - echo Preparing frontend build
-      - ls -la src/  # Debug: check if frontend directory exists
+
   build:
     commands:
-      - echo "🚀 Starting Frontend Build Process..."
-      - |
-        if [ ! -d "src/frontend" ]; then
-          echo "❌ Error: src/frontend directory not found"
-          exit 1
-        fi
-      - echo "📁 Navigating to frontend directory"
+      - echo "Building frontend"
       - cd src/frontend
-      - |
-        if [ ! -f "package.json" ]; then
-          echo "❌ Error: package.json not found in src/frontend"
-          exit 1
-        fi
-      - echo "📦 Installing frontend dependencies..."
-      - |
-        if [ -f "package-lock.json" ]; then
-          npm ci --legacy-peer-deps
+
+      - if [ ! -f "package.json" ]; then echo "package.json not found in src/frontend"; exit 1; fi
+
+      - if [ -f "package-lock.json" ]; then
+          npm ci --legacy-peer-deps;
         else
-          npm install --legacy-peer-deps
+          npm install --legacy-peer-deps;
         fi
-      - echo "🔍 Debugging npm installation..."
-      - npm list --depth=0 | head -20
-      - ls -la node_modules/.bin/ | grep vite || echo "No vite binary found"
-      - echo "🔧 Ensuring Vite is properly installed locally..."
+
       - npm install vite@^5.3.1 --save-dev --legacy-peer-deps
       - npm install @vitejs/plugin-react@^4.3.1 --save-dev --legacy-peer-deps
-      - echo "📋 Verification after manual install:"
-      - npm list vite
-      - ls -la node_modules/.bin/ | grep vite
-      - echo "🏗️ Building frontend application..."
+
       - npx vite build
-      - echo "✅ Frontend build completed"
+
       - cd ../..
-      - echo "📁 Preparing nginx dist directory..."
+
+      - echo "Preparing nginx dist directory"
       - mkdir -p deployment/docker/nginx/dist
-      - echo "🧹 Cleaning existing nginx dist files..."
       - rm -rf deployment/docker/nginx/dist/*
-      - echo "📋 Copying frontend dist files to nginx location..."
-      - |
-        if [ -d "src/frontend/dist" ]; then
-          cp -r src/frontend/dist/* deployment/docker/nginx/dist/
-          echo "📊 Verifying copied files:"
-          ls -la deployment/docker/nginx/dist/
+
+      - if [ -d "src/frontend/dist" ]; then
+          cp -r src/frontend/dist/* deployment/docker/nginx/dist/;
         elif [ -d "src/frontend/build" ]; then
-          cp -r src/frontend/build/* deployment/docker/nginx/dist/
-          echo "📊 Verifying copied files (from build folder):"
-          ls -la deployment/docker/nginx/dist/
+          cp -r src/frontend/build/* deployment/docker/nginx/dist/;
         else
-          echo "❌ No dist or build folder found"
-          exit 1
+          echo "No dist or build folder found";
+          exit 1;
         fi
-      - echo "🎉 Frontend build and copy completed successfully!"
-      - echo "🐳 Building Docker images..."
+
+      - echo "Building Docker images"
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
+
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
+
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
       - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
+
   post_build:
     commands:
-      - echo "📤 Pushing images to ECR..."
+      - echo "Pushing images to ECR"
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
+
       - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
-      - echo "✅ All images pushed successfully!"
+
 artifacts:
   files:
     - imageDefinitions.json
