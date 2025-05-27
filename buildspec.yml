@@ -4,28 +4,74 @@ env:
     AWS_DEFAULT_REGION: ap-south-1
     AWS_ACCOUNT_ID: 459858848469
     ENV: prod
+    NODE_ENV: production
 phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo Installing global dependencies
+      - npm install -g npm@latest
   pre_build:
     commands:
       - echo Logging in to Amazon ECR
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo Cloning repository
       - git clone https://github.com/Emergiogames/investryx_prod.git
       - cd investryx_prod
       - git checkout main
       - git pull origin main
       - export IMAGE_TAG=$(date +%d%m%Y)
+      - echo Preparing frontend build
+      - ls -la src/  # Debug: check if frontend directory exists
   build:
     commands:
+      - echo "🚀 Starting Frontend Build Process..."
+      - |
+        if [ ! -d "src/frontend" ]; then
+          echo "❌ Error: src/frontend directory not found"
+          exit 1
+        fi
+      - echo "📁 Navigating to frontend directory"
+      - cd src/frontend
+      - |
+        if [ ! -f "package.json" ]; then
+          echo "❌ Error: package.json not found in src/frontend"
+          exit 1
+        fi
+      - echo "📦 Installing frontend dependencies..."
+      - |
+        if [ -f "package-lock.json" ]; then
+          npm ci --only=production
+        else
+          npm install --only=production
+        fi
+      - echo "🏗️ Building frontend application..."
+      - npm run build
+      - echo "✅ Frontend build completed"
+      - cd ../..
+      - echo "📁 Preparing nginx dist directory..."
+      - mkdir -p deployment/docker/nginx/dist
+      - echo "🧹 Cleaning existing nginx dist files..."
+      - rm -rf deployment/docker/nginx/dist/*
+      - echo "📋 Copying frontend dist files to nginx location..."
+      - cp -r src/frontend/dist/* deployment/docker/nginx/dist/
+      - echo "📊 Verifying copied files:"
+      - ls -la deployment/docker/nginx/dist/
+      - echo "🎉 Frontend build and copy completed successfully!"
+      - echo "🐳 Building Docker images..."
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG -f deployment/docker/backend/Dockerfile .
       - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG -f deployment/docker/nginx/Dockerfile deployment/docker/nginx
       - docker pull public.ecr.aws/docker/library/redis:6-alpine
       - docker tag public.ecr.aws/docker/library/redis:6-alpine $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
   post_build:
     commands:
+      - echo "📤 Pushing images to ECR..."
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-nginx:$IMAGE_TAG
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-redis:$IMAGE_TAG
       - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/investryx-backend:$IMAGE_TAG > imageDefinitions.json
+      - echo "✅ All images pushed successfully!"
 artifacts:
   files:
     - imageDefinitions.json
