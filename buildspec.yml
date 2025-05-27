@@ -44,9 +44,9 @@ phases:
       - echo "📦 Installing frontend dependencies..."
       - |
         if [ -f "package-lock.json" ]; then
-          npm ci --only=production
+          npm ci
         else
-          npm install --only=production
+          npm install
         fi
       - echo "🏗️ Building frontend application..."
       - npm run build
