@@ -8,9 +8,11 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 18
+      nodejs: 20
     commands:
-      - echo Installing global dependencies
+      - echo Using Node.js 20 with latest npm
+      - node --version
+      - npm --version
       - npm install -g npm@latest
   pre_build:
     commands:
