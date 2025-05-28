@@ -20,6 +20,8 @@ from django.conf import settings
 def verify_payment(transaction_key, amount):
     print(f"Amount: {amount}")
     print(f"Transaction Key: {transaction_key}")
+    if not amount or int(amount) <= 0:
+        raise ValueError("Invalid amount passed to verify_payment")
     client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
     amount_in_paise = int(int(amount) * 100)
     print(amount_in_paise)
