@@ -1101,6 +1101,8 @@ class Subscribe(APIView):
                     print(plan)
                     order_amount = await sync_to_async(lambda: plan.rate)()
                     print(order_amount)
+                    if not order_amount or int(order_amount) <= 0:
+                        return Response({'status': False, 'message': 'Invalid plan amount'}, status=status.HTTP_400_BAD_REQUEST)
                     verified, payment_details = await sync_to_async(verify_payment)(request.data.get('transaction_id'), order_amount)
                     if verified:
                         if not await Subscription.objects.filter(user=user, plan__type=plan.type).aexists():
