@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import {  toast } from 'react-toastify';
+import React, { useCallback, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import { HiChevronLeft, HiOutlineClipboardCopy, HiCheck } from "react-icons/hi";
 import { XCircle } from "lucide-react";
@@ -12,123 +12,13 @@ import Select from "react-select";
 import { initialInvestorValues, validationInvestorSchema } from "../../utils/validation/postInvestorValidation";
 import Loader from "../loader/loader";
 
-const stateCityMapping = {
-    karnataka: [
-        { label: "Bagalkot", value: "bagalkot" },
-        { label: "Bangalore Rural", value: "bangalore-rural" },
-        { label: "Bangalore Urban", value: "bangalore-urban" },
-        { label: "Belgaum", value: "belgaum" },
-        { label: "Bellary", value: "bellary" },
-        { label: "Bidar", value: "bidar" },
-        { label: "Vijayapura", value: "vijayapura" },
-        { label: "Chamarajanagar", value: "chamarajanagar" },
-        { label: "Chikkaballapur", value: "chikkaballapur" },
-        { label: "Chikkamagaluru", value: "chikkamagaluru" },
-        { label: "Chitradurga", value: "chitradurga" },
-        { label: "Dakshina Kannada", value: "dakshina-kannada" },
-        { label: "Davanagere", value: "davanagere" },
-        { label: "Dharwad", value: "dharwad" },
-        { label: "Gadag", value: "gadag" },
-        { label: "Hassan", value: "hassan" },
-        { label: "Haveri", value: "haveri" },
-        { label: "Kalaburagi", value: "kalaburagi" },
-        { label: "Kodagu", value: "kodagu" },
-        { label: "Kolar", value: "kolar" },
-        { label: "Koppal", value: "koppal" },
-        { label: "Mandya", value: "mandya" },
-        { label: "Mysore", value: "mysore" },
-        { label: "Raichur", value: "raichur" },
-        { label: "Ramanagara", value: "ramanagara" },
-        { label: "Shivamogga", value: "shivamogga" },
-        { label: "Tumkur", value: "tumkur" },
-        { label: "Udupi", value: "udupi" },
-        { label: "Uttara Kannada", value: "uttara-kannada" },
-        { label: "Vijayanagara", value: "vijayanagara" },
-        { label: "Yadgir", value: "yadgir" },
-    ],
-    maharashtra: [
-        { label: "Mumbai", value: "mumbai" },
-        { label: "Pune", value: "pune" },
-    ],
-    tamilNaduDistricts: [
-        { label: "Ariyalur", value: "ariyalur" },
-        { label: "Chengalpattu", value: "chengalpattu" },
-        { label: "Chennai", value: "chennai" },
-        { label: "Coimbatore", value: "coimbatore" },
-        { label: "Cuddalore", value: "cuddalore" },
-        { label: "Dharmapuri", value: "dharmapuri" },
-        { label: "Dindigul", value: "dindigul" },
-        { label: "Erode", value: "erode" },
-        { label: "Kallakurichi", value: "kallakurichi" },
-        { label: "Kanchipuram", value: "kanchipuram" },
-        { label: "Kanniyakumari", value: "kanniyakumari" },
-        { label: "Karur", value: "karur" },
-        { label: "Krishnagiri", value: "krishnagiri" },
-        { label: "Madurai", value: "madurai" },
-        { label: "Mayiladuthurai", value: "mayiladuthurai" },
-        { label: "Nagapattinam", value: "nagapattinam" },
-        { label: "Namakkal", value: "namakkal" },
-        { label: "Nilgiris", value: "nilgiris" },
-        { label: "Perambalur", value: "perambalur" },
-        { label: "Pudukkottai", value: "pudukkottai" },
-        { label: "Ramanathapuram", value: "ramanathapuram" },
-        { label: "Ranipet", value: "ranipet" },
-        { label: "Salem", value: "salem" },
-        { label: "Sivaganga", value: "sivaganga" },
-        { label: "Tenkasi", value: "tenkasi" },
-        { label: "Thanjavur", value: "thanjavur" },
-        { label: "Theni", value: "theni" },
-        { label: "Thoothukudi", value: "thoothukudi" },
-        { label: "Tiruchirappalli", value: "tiruchirappalli" },
-        { label: "Tirunelveli", value: "tirunelveli" },
-        { label: "Tirupathur", value: "tirupathur" },
-        { label: "Tiruppur", value: "tiruppur" },
-        { label: "Tiruvallur", value: "tiruvallur" },
-        { label: "Tiruvannamalai", value: "tiruvannamalai" },
-        { label: "Tiruvarur", value: "tiruvarur" },
-        { label: "Vellore", value: "vellore" },
-        { label: "Viluppuram", value: "viluppuram" },
-        { label: "Virudhunagar", value: "virudhunagar" },
-    ],
-    kerala: [
-        { label: "Alappuzha", value: "alappuzha" },
-        { label: "Ernakulam", value: "ernakulam" },
-        { label: "Idukki", value: "idukki" },
-        { label: "Kannur", value: "kannur" },
-        { label: "Kasaragod", value: "kasaragod" },
-        { label: "Kollam", value: "kollam" },
-        { label: "Kottayam", value: "kottayam" },
-        { label: "Kozhikode", value: "kozhikode" },
-        { label: "Malappuram", value: "malappuram" },
-        { label: "Palakkad", value: "palakkad" },
-        { label: "Pathanamthitta", value: "pathanamthitta" },
-        { label: "Thiruvananthapuram", value: "thiruvananthapuram" },
-        { label: "Thrissur", value: "thrissur" },
-        { label: "Wayanad", value: "wayanad" },
-    ],
-
-    uttarpradesh: [
-        { label: "Lucknow", value: "lucknow" },
-        { label: "Kanpur", value: "kanpur" },
-    ],
-};
-//to address overlapping issue with city and state dropdown
-const states = Object.keys(stateCityMapping).map((key) => ({
-    label: key.charAt(0).toUpperCase() + key.slice(1),
-    value: key,
-}));
-
-const customStyles = {
-    menu: (provided) => ({
-        ...provided,
-        zIndex: 9999, // Prevent overlap
-    }),
-};
 
 function AddInvestor() {
     const selectedUser = (state) => state.auth.user || "";
     const user = useSelector(selectedUser);
     const userId = user.id || "";
+
+    const [stateCityMapping, setStateCityMapping] = useState({});
 
     const [selectedFiles1, setSelectedFiles1] = useState([]);
     const [selectedFiles2, setSelectedFiles2] = useState([]);
@@ -137,6 +27,29 @@ function AddInvestor() {
     const location = useLocation();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchCityState = async () => {
+            try {
+                const response = await fetch("/texts/stateCityMapping.json");
+                if (!response.ok) throw new Error("Failed to fetch City - States");
+                const data = await response.json();
+                setStateCityMapping(data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching State-cities:", error);
+                setLoading(false);
+            }
+        };
+        fetchCityState();
+    }, []);
+
+    const states = Object.keys(stateCityMapping).map((key) => ({
+        label: key.charAt(0).toUpperCase() + key.slice(1),
+        value: key,
+    }));
+
+    console.log("444 ::", states);
 
     const handleClose = () => {
         if (location.state?.from) {
@@ -177,7 +90,7 @@ function AddInvestor() {
                 evaluating_aspects,
                 company,
                 url,
-                about_company,
+                description,
             } = formik.values;
 
             const formData = new FormData();
@@ -204,14 +117,13 @@ function AddInvestor() {
             formData.append("city", city);
             formData.append("profile_summary", profile_summary);
             formData.append("preference", JSON.stringify(formik.values.preferences));
-            // formData.append("preference", preferences);
             formData.append("location_interested", location_interested);
             formData.append("range_starting", range_starting);
             formData.append("range_ending", range_ending);
             formData.append("evaluating_aspects", evaluating_aspects);
             formData.append("company", company);
             formData.append("url", url);
-            formData.append("about_company", about_company);
+            formData.append("description", description);
             formData.append("userId", userId);
 
             try {
@@ -247,12 +159,20 @@ function AddInvestor() {
 
     // Handle state change
     const handleStateChange = (selected) => {
-        setSelectedState(selected);
-        setCityOptions(stateCityMapping[selected?.value] || []);
+        const newCityOptions = stateCityMapping[selected?.value] || [];
+        console.log("Available cities for", selected?.value, ":", newCityOptions);
+
+        setSelectedState(selected?.value);
+        setCityOptions(newCityOptions);
         setSelectedCity(null);
+
         formik.setFieldValue("state", selected?.value || "");
         formik.setFieldValue("city", "");
     };
+
+    useEffect(() => {
+        console.log("555 ::", cityOptions);
+    }, [cityOptions]);
 
     //Handle file change one
     const [selectedPreviewIndex, setSelectedPreviewIndex] = useState(0);
@@ -553,33 +473,26 @@ function AddInvestor() {
                                                 </div>
 
                                                 {/* City Dropdown */}
-                                                <div className="relative z-0 w-full group mb-5">
-                                                    <label className="block text-lg font-medium text-gray-700 mb-1">
-                                                        Select City
-                                                    </label>
-                                                    <Select
-                                                        options={cityOptions}
-                                                        value={
-                                                            cityOptions.find(
-                                                                (option) => option.value === formik.values.city
-                                                            ) || selectedCity
-                                                        }
-                                                        onChange={(selected) => {
-                                                            setSelectedCity(selected);
-                                                            formik.setFieldValue("city", selected?.value || "");
-                                                        }}
-                                                        placeholder="Choose a city"
-                                                        styles={{
-                                                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                                                        }}
-                                                        menuPortalTarget={document.body}
-                                                        menuPosition="absolute"
-                                                        isDisabled={!selectedState}
-                                                    />
-                                                    {formik.touched.city && formik.errors.city && (
+                                                <Select
+                                                    options={cityOptions.map((city) => ({ value: city, label: city }))} // Transform here
+                                                    value={cityOptions
+                                                        .map((city) => ({ value: city, label: city }))
+                                                        .find((option) => option.value === formik.values.city)}
+                                                    onChange={(selected) => {
+                                                        setSelectedCity(selected);
+                                                        formik.setFieldValue("city", selected?.value || "");
+                                                    }}
+                                                    placeholder="Choose a city"
+                                                    styles={{
+                                                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                                                    }}
+                                                    menuPortalTarget={document.body}
+                                                    menuPosition="absolute"
+                                                    isDisabled={!selectedState}
+                                                />
+                                                 {formik.touched.city && formik.errors.city && (
                                                         <p className="text-red-600 text-xs mt-1">{formik.errors.city}</p>
                                                     )}
-                                                </div>
                                             </div>
 
                                             {/* Describe yourself */}
@@ -795,24 +708,24 @@ function AddInvestor() {
                                             {/*about your company */}
                                             <div className="relative z-0 w-full mb-5 group">
                                                 <label
-                                                    htmlFor="about_company"
+                                                    htmlFor="description"
                                                     className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-1"
                                                 >
                                                     About your company
                                                 </label>
                                                 <textarea
-                                                    value={formik.values.about_company}
+                                                    value={formik.values.description}
                                                     onChange={formik.handleChange}
                                                     onBlur={formik.handleBlur}
                                                     autoComplete="off"
-                                                    name="about_company"
-                                                    id="about_company"
+                                                    name="description"
+                                                    id="description"
                                                     className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-amber-50 border-2 border-gray-300 rounded-md resize-y dark:text-white dark:bg-gray-800 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                                                     rows={4}
                                                 />
-                                                {formik.touched.about_company && formik.errors.about_company && (
+                                                {formik.touched.description && formik.errors.description && (
                                                     <p className="text-red-600 text-xs mt-1">
-                                                        {formik.errors.about_company}
+                                                        {formik.errors.description}
                                                     </p>
                                                 )}
                                             </div>

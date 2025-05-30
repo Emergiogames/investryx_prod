@@ -4,58 +4,42 @@ import { BASE_URL } from "../../constants/baseUrls";
 import { getOneRooms } from "../../services/userChat/apiMethods";
 import { toast } from "react-toastify";
 import { FaRegImages } from "react-icons/fa6";
+import { useSelector } from "react-redux";
+import Button from "@mui/material/Button";
+import { leftPlan } from "../../services/user/apiMethods";
+import { formatDistanceToNow } from "date-fns";
 
 function ViewPostAdv() {
+    const [planStatus, setPlanStatus] = useState(false);
+
     const location = useLocation();
     const post = location.state?.post;
+    console.log("11 ::", post);
+
+    const selectedUserId = (state) => state.auth.user.id || "";
+    const userId = useSelector(selectedUserId);
 
     const navigate = useNavigate();
 
     // col 2
+
+    const postUser = post.user;
     const postName = post.name;
+    const postCompany = post?.company;
+    const postDesig = post?.designation;
     const postState = post.state;
     const postCity = post.city;
-    const postOffering = post.offering;
-
-    const postAddressOne = post.address_1;
-    const postAddressTwo = post.address_2;
-    const postDescription = post.description;
-    const postPin = post.pin;
-    const postReason = post.reason;
-
-    const postIncomeSource = post.income_source;
+    const postNumber = post?.number;
+    const postEmail = post?.email;
+    const postExperience = post?.experience;
+    const postIndustry = post.industry;
+    const postInterest = post?.interest;
+    const postListedOn = post?.listed_on;
+    const postSingleDes = post?.single_desc;
+    const postTitle = post?.title;
 
     // col 1
     const postLogo = post.logo || post.image1;
-
-    const postEstablish = post.establish_yr;
-    const postIndustry = post.industry;
-    const postEmployees = post.employees;
-    const postEntity = post.entity;
-    const postAvgMonthly = post.avg_monthly;
-    const postLatestYearly = post.latest_yearly;
-    const postEbitda = post.ebitda;
-    const postRate = post.rate;
-    const postSaleType = post.sale;
-    const postUrl = post.url;
-    const postTopSelling = post.top_selling;
-    const postfeatures = post.features;
-    const postFacility = post.facility;
-
-    //img
-    const postImage = {
-        img1: post?.image1,
-        img2: post?.image2,
-        img3: post?.image3,
-        img4: post?.image4,
-    };
-    const postDoc = post.doc1;
-    const postProof = post.proof1;
-
-    //selected image
-    const [selectedImage, setSelectedImage] = useState(post?.image1);
-
-    //receiverId of post to generate room etc
     const receiverId = post.id;
 
     const handleConnectRequest = (receiverId) => {
@@ -64,7 +48,7 @@ function ViewPostAdv() {
                 .then((response) => {
                     if (response.data.status === true) {
                         toast.success("chat accessing");
-                        navigate("/chatUsersAll", { state: { roomData: response.data } });
+                        navigate("/connectionAll", { state: { roomData: response.data } });
                     }
                 })
                 .catch((error) => {
@@ -75,6 +59,25 @@ function ViewPostAdv() {
         }
     };
 
+    useEffect(() => {
+        const checkPlan = async (type = "business") => {
+            try {
+                setLoader(true);
+                const response = await leftPlan(type);
+                if (response?.data?.status === true) {
+                    setPlanStatus(true);
+                } else {
+                    setPlanStatus(false);
+                }
+                setLoader(false);
+            } catch (error) {
+                console.error("Error happened in subscription check:", error);
+            }
+        };
+
+        checkPlan();
+    }, []);
+
     return (
         <>
             <div className="flex justify-center items-center">
@@ -83,6 +86,7 @@ function ViewPostAdv() {
                         {/* box left  */}
                         <div className="lg:w-1/2 min-h-[30rem] lg:p-8 lg:m-7  bg-amber-100 rounded-2xl shadow-xl">
                             {/* main imag */}
+                            <div className="text-2xl font-bold m-3 my-4">{postTitle}</div>
                             <div className="p-3">
                                 {postLogo ? (
                                     <div className="relative w-full" style={{ aspectRatio: "16 / 9" }}>
@@ -92,28 +96,12 @@ function ViewPostAdv() {
                                             alt="main_img"
                                         />
                                     </div>
-                                ) :  (
+                                ) : (
                                     <div className="relative w-full " style={{ aspectRatio: "16 / 9" }}>
                                         <FaRegImages className="w-full h-full rounded-lg text-gray-500 bg-white p-4" />
                                     </div>
                                 )}
                             </div>
-
-                            {/* subsidry imag */}
-
-                            {/* <div className="flex lg:gap-4 lg:p-3 m-3">
-                                {Object.entries(postImage).map(([key, value], index) =>
-                                    value ? (
-                                        <div key={index} className="" onClick={() => setSelectedImage(value)}>
-                                            <img
-                                                className="rounded-xl w-24 h-24 "
-                                                src={`${BASE_URL}${value}`}
-                                                alt={`subsidiary_img_${index}`}
-                                            />
-                                        </div>
-                                    ) : null
-                                )}
-                            </div> */}
 
                             <div>
                                 <div className="flex ">
@@ -123,93 +111,137 @@ function ViewPostAdv() {
                                     <div>
                                         Location :{postState}, {postCity}
                                     </div>
-                                    <div>Price : {postOffering ? postOffering : "N/A"}</div>
+                                    <div>
+                                        Listed on :{" "}
+                                        {postListedOn
+                                            ? formatDistanceToNow(new Date(postListedOn), { addSuffix: true })
+                                            : "N/A"}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         {/* box right */}
                         <div className="lg:w-1/2 min-h-[30rem] p-6 m-6 bg-amber-100 rounded-2xl shadow-xl">
-                            <h1 className="text-2xl font-bold text-violet-900 flex justify-center">Over</h1>
+                            <h1 className="text-2xl font-bold text-violet-900 flex justify-center">Overview</h1>
                             <ul className="pl-2 ">
+                                <div className="flex justify-between">
+                                    <div className="font-bold text-xl text-gray-500 py-3">General</div>
+                                    {userId === postUser && (
+                                        <div>
+                                            <Button variant="contained" size="small">
+                                                Owner
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="w-full">
                                     <table className="w-full border-collapse">
                                         <tbody>
                                             <tr className="border-b">
-                                                <td className="py-2 font-semibold w-1/3">Established</td>
-                                                <td className="py-2">{postEstablish ? postEstablish : "N/A"}</td>
+                                                <td className="py-2 font-semibold w-1/3">Advisor Name</td>
+                                                <td className="py-2">{postName ? postName : "N/A"}</td>
                                             </tr>
                                             <tr className="border-b">
-                                                <td className="py-2 font-semibold">Industry</td>
-                                                <td className="py-2">{postIndustry ? postIndustry : "N/A"}</td>
+                                                <td className="py-2 font-semibold">Designation</td>
+                                                <td className="py-2">{postDesig ? postDesig : "N/A"}</td>
                                             </tr>
                                             <tr className="border-b">
-                                                <td className="py-2 font-semibold">Entity</td>
-                                                <td className="py-2">{postEntity ? postEntity : "N/A"}</td>
+                                                <td className="py-2 font-semibold">Company Name</td>
+                                                <td className="py-2">{postCompany ? postCompany : "N/A"}</td>
                                             </tr>
                                             <tr className="border-b">
-                                                <td className="py-2 font-semibold">Employees</td>
-                                                <td className="py-2">{postEmployees ? postEmployees : "N/A"}</td>
+                                                <td className="py-2 font-semibold">Phone Number</td>
+                                                <td className="py-2">{postNumber ? postNumber : "N/A"}</td>
                                             </tr>
                                             <tr className="border-b">
-                                                <td className="py-2 font-semibold">Average Monthly Turnover</td>
-                                                <td className="py-2">{postAvgMonthly ? postAvgMonthly : "N/A"}</td>
+                                                <td className="py-2 font-semibold">Email</td>
+                                                <td className="py-2">{postEmail ? postEmail : "N/A"}</td>
                                             </tr>
                                             <tr className="border-b">
-                                                <td className="py-2 font-semibold">Latest Yearly Turnover</td>
-                                                <td className="py-2">{postLatestYearly ? postLatestYearly : "N/A"}</td>
+                                                <td className="py-2 font-semibold">Experience</td>
+                                                <td className="py-2">{postExperience ? postExperience : "N/A"}</td>
+                                            </tr>
+                                            {/* <tr className="border-b">
+                                                <td className="py-2 font-semibold">Post Description</td>
+                                                <td className="py-2">{postDescription ? postDescription : "N/A"}</td>
+                                            </tr> */}
+                                            <tr className="border-b">
+                                                <td className="py-2 font-semibold">Advisor's handson Industry</td>
+                                                <td className="py-2">
+                                                    {postIndustry
+                                                        ? (() => {
+                                                              let arr = [];
+                                                              try {
+                                                                  arr =
+                                                                      typeof postIndustry === "string"
+                                                                          ? JSON.parse(postIndustry)
+                                                                          : postIndustry;
+                                                              } catch {
+                                                                  arr = [];
+                                                              }
+                                                              return Array.isArray(arr) && arr.length > 0
+                                                                  ? arr.map((item, idx) => <div key={idx}>{item}</div>)
+                                                                  : "N/A";
+                                                          })()
+                                                        : "N/A"}
+                                                </td>
                                             </tr>
                                             <tr className="border-b">
-                                                <td className="py-2 font-semibold">EBITDA</td>
-                                                <td className="py-2">{postEbitda ? postEbitda : "N/A"}</td>
+                                                <td className="py-2 font-semibold">Advisor's, interest into</td>
+                                                <td className="py-2">
+                                                    {postInterest
+                                                        ? (() => {
+                                                              let arr = [];
+                                                              try {
+                                                                  arr =
+                                                                      typeof postInterest === "string"
+                                                                          ? JSON.parse(postInterest)
+                                                                          : postInterest;
+                                                              } catch {
+                                                                  arr = [];
+                                                              }
+                                                              return Array.isArray(arr) && arr.length > 0
+                                                                  ? arr.map((item, idx) => <div key={idx}>{item}</div>)
+                                                                  : "N/A";
+                                                          })()
+                                                        : "N/A"}
+                                                </td>
                                             </tr>
+
                                             <tr className="border-b">
-                                                <td className="py-2 font-semibold">Rate</td>
-                                                <td className="py-2">{postRate ? postRate : "N/A"}</td>
+                                                <td className="py-2 font-semibold">Singe Description</td>
+                                                <td className="py-2">{postSingleDes ? postSingleDes : "N/A"}</td>
                                             </tr>
-                                            <tr className="border-b">
-                                                <td className="py-2 font-semibold">Sale</td>
-                                                <td className="py-2">{postSaleType ? postSaleType : "N/A"}</td>
-                                            </tr>
-                                            <tr className="border-b">
-                                                <td className="py-2 font-semibold">Url</td>
-                                                <td className="py-2">{postUrl ? postUrl : "N/A"}</td>
-                                            </tr>
-                                            <tr className="border-b">
-                                                <td className="py-2 font-semibold">Top-selling</td>
-                                                <td className="py-2">{postTopSelling ? postTopSelling : "N/A"}</td>
-                                            </tr>
-                                            <tr className="border-b">
-                                                <td className="py-2 font-semibold">Features</td>
-                                                <td className="py-2">{postfeatures ? postfeatures : "N/A"}</td>
-                                            </tr>
-                                            <tr className="border-b">
-                                                <td className="py-2 font-semibold">Facilities</td>
-                                                <td className="py-2">{postFacility ? postFacility : "N/A"}</td>
-                                            </tr>
-                                            <tr className="border-b">
-                                                <td className="py-2 font-semibold">Income-source</td>
-                                                <td className="py-2">{postIncomeSource ? postIncomeSource : "N/A"}</td>
-                                            </tr>
+                                            {/* <tr className="border-b">
+                                                <td className="py-2 font-semibold">Post Title</td>
+                                                <td className="py-2">{postTitle ? postTitle : "N/A"}</td>
+                                            </tr> */}
                                         </tbody>
                                     </table>
                                 </div>
                             </ul>
                             {/* buttons  */}
                             <div className=" lg:flex justify-evenly ">
-                                <div
-                                    onClick={() => handleConnectRequest(receiverId)}
-                                    className="bg-yellow-300 hover: cursor-pointer hover:bg-yellow-400 p-3 m-4 px-7 text-xl font-semibold rounded-lg"
-                                >
-                                    Request Connect
-                                </div>
+                                {userId === postUser ? null : (
+                                    <div
+                                        onClick={
+                                            planStatus
+                                                ? () => handleConnectRequest(receiverId)
+                                                : () => (window.location.href = "/subscribe")
+                                        }
+                                        className="bg-yellow-300 hover:cursor-pointer hover:bg-yellow-400 p-3 m-4 px-7 text-xl font-semibold rounded-lg"
+                                    >
+                                        {planStatus ? "Request Connect" : "Subscribe"}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
                     {/* box bottom */}
                     <div className=" bg-amber-100  min-h-[19rem]  p-8 m-7 rounded-2xl shadow-xl">
                         <div className="text-center text-violet-900 text-2xl font-bold p-3 m-4">Detailed Informtion</div>
-                        <div className="text-xl font-semibold p-2 m-2">Reason for Selling</div>
-                        <div className="p-2 m-1 mx-6">{postDescription ? postDescription : "N/A"}</div>
+                        <div className="text-xl font-semibold p-2 m-2">About</div>
+                        <div className="p-2 m-1 mx-6">{postTitle ? postTitle : "N/A"}</div>
                     </div>
                 </div>
             </div>

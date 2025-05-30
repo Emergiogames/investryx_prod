@@ -139,11 +139,11 @@ function FranchisePosts({ post }) {
                         </Avatar>
                     )
                 }
-                action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon />
-                    </IconButton>
-                }
+                // action={
+                //     <IconButton aria-label="settings">
+                //         <MoreVertIcon />
+                //     </IconButton>
+                // }
                 title={post.single_desc}
                 subheader={postDate}
             />
@@ -176,9 +176,9 @@ function FranchisePosts({ post }) {
                 <IconButton aria-label="add to favorites" onClick={handleSave}>
                     <IoBookmarks className={isSavedByUser ? "text-amber-300" : ""} />{" "}
                 </IconButton>
-                <IconButton aria-label="share" onClick={() => handleShare(post.id)}>
+                {/* <IconButton aria-label="share" onClick={() => handleShare(post.id)}>
                     <ShareIcon />
-                </IconButton>
+                </IconButton> */}
                 <ExpandMore expand={expanded} onClick={handleExpandClick} aria-expanded={expanded} aria-label="show more">
                     <ExpandMoreIcon />
                 </ExpandMore>

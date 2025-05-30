@@ -15,7 +15,7 @@ const ChatButton = () => {
 
     const handleChatClick = () => {
         if (user) {
-            navigate("/chatUsersAll");
+            navigate("/connectionAll");
         } else {
             toast.info("Please login to proceed");
             navigate("/login");

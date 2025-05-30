@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import { HiChevronLeft, HiOutlineClipboardCopy, HiCheck } from "react-icons/hi";
@@ -8,129 +8,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { addBusinessPost } from "../../services/user/apiMethods";
 import { HiOutlinePlusSm } from "react-icons/hi";
 import Select from "react-select";
-import { CountrySelect, StateSelect, CitySelect } from "react-country-state-city";
-import "react-country-state-city/dist/react-country-state-city.css";
 
 import { initialValues, validationSchema } from "../../utils/validation/postValidation";
 import Loader from "../loader/loader";
-
-// const stateCityMapping = {
-//     karnataka: [
-//         { label: "Bagalkot", value: "bagalkot" },
-//         { label: "Bangalore Rural", value: "bangalore-rural" },
-//         { label: "Bangalore Urban", value: "bangalore-urban" },
-//         { label: "Belgaum", value: "belgaum" },
-//         { label: "Bellary", value: "bellary" },
-//         { label: "Bidar", value: "bidar" },
-//         { label: "Vijayapura", value: "vijayapura" },
-//         { label: "Chamarajanagar", value: "chamarajanagar" },
-//         { label: "Chikkaballapur", value: "chikkaballapur" },
-//         { label: "Chikkamagaluru", value: "chikkamagaluru" },
-//         { label: "Chitradurga", value: "chitradurga" },
-//         { label: "Dakshina Kannada", value: "dakshina-kannada" },
-//         { label: "Davanagere", value: "davanagere" },
-//         { label: "Dharwad", value: "dharwad" },
-//         { label: "Gadag", value: "gadag" },
-//         { label: "Hassan", value: "hassan" },
-//         { label: "Haveri", value: "haveri" },
-//         { label: "Kalaburagi", value: "kalaburagi" },
-//         { label: "Kodagu", value: "kodagu" },
-//         { label: "Kolar", value: "kolar" },
-//         { label: "Koppal", value: "koppal" },
-//         { label: "Mandya", value: "mandya" },
-//         { label: "Mysore", value: "mysore" },
-//         { label: "Raichur", value: "raichur" },
-//         { label: "Ramanagara", value: "ramanagara" },
-//         { label: "Shivamogga", value: "shivamogga" },
-//         { label: "Tumkur", value: "tumkur" },
-//         { label: "Udupi", value: "udupi" },
-//         { label: "Uttara Kannada", value: "uttara-kannada" },
-//         { label: "Vijayanagara", value: "vijayanagara" },
-//         { label: "Yadgir", value: "yadgir" },
-//     ],
-//     maharashtra: [
-//         { label: "Mumbai", value: "mumbai" },
-//         { label: "Pune", value: "pune" },
-//     ],
-//     tamilNaduDistricts: [
-//         { label: "Ariyalur", value: "ariyalur" },
-//         { label: "Chengalpattu", value: "chengalpattu" },
-//         { label: "Chennai", value: "chennai" },
-//         { label: "Coimbatore", value: "coimbatore" },
-//         { label: "Cuddalore", value: "cuddalore" },
-//         { label: "Dharmapuri", value: "dharmapuri" },
-//         { label: "Dindigul", value: "dindigul" },
-//         { label: "Erode", value: "erode" },
-//         { label: "Kallakurichi", value: "kallakurichi" },
-//         { label: "Kanchipuram", value: "kanchipuram" },
-//         { label: "Kanniyakumari", value: "kanniyakumari" },
-//         { label: "Karur", value: "karur" },
-//         { label: "Krishnagiri", value: "krishnagiri" },
-//         { label: "Madurai", value: "madurai" },
-//         { label: "Mayiladuthurai", value: "mayiladuthurai" },
-//         { label: "Nagapattinam", value: "nagapattinam" },
-//         { label: "Namakkal", value: "namakkal" },
-//         { label: "Nilgiris", value: "nilgiris" },
-//         { label: "Perambalur", value: "perambalur" },
-//         { label: "Pudukkottai", value: "pudukkottai" },
-//         { label: "Ramanathapuram", value: "ramanathapuram" },
-//         { label: "Ranipet", value: "ranipet" },
-//         { label: "Salem", value: "salem" },
-//         { label: "Sivaganga", value: "sivaganga" },
-//         { label: "Tenkasi", value: "tenkasi" },
-//         { label: "Thanjavur", value: "thanjavur" },
-//         { label: "Theni", value: "theni" },
-//         { label: "Thoothukudi", value: "thoothukudi" },
-//         { label: "Tiruchirappalli", value: "tiruchirappalli" },
-//         { label: "Tirunelveli", value: "tirunelveli" },
-//         { label: "Tirupathur", value: "tirupathur" },
-//         { label: "Tiruppur", value: "tiruppur" },
-//         { label: "Tiruvallur", value: "tiruvallur" },
-//         { label: "Tiruvannamalai", value: "tiruvannamalai" },
-//         { label: "Tiruvarur", value: "tiruvarur" },
-//         { label: "Vellore", value: "vellore" },
-//         { label: "Viluppuram", value: "viluppuram" },
-//         { label: "Virudhunagar", value: "virudhunagar" },
-//     ],
-//     kerala: [
-//         { label: "Alappuzha", value: "alappuzha" },
-//         { label: "Ernakulam", value: "ernakulam" },
-//         { label: "Idukki", value: "idukki" },
-//         { label: "Kannur", value: "kannur" },
-//         { label: "Kasaragod", value: "kasaragod" },
-//         { label: "Kollam", value: "kollam" },
-//         { label: "Kottayam", value: "kottayam" },
-//         { label: "Kozhikode", value: "kozhikode" },
-//         { label: "Malappuram", value: "malappuram" },
-//         { label: "Palakkad", value: "palakkad" },
-//         { label: "Pathanamthitta", value: "pathanamthitta" },
-//         { label: "Thiruvananthapuram", value: "thiruvananthapuram" },
-//         { label: "Thrissur", value: "thrissur" },
-//         { label: "Wayanad", value: "wayanad" },
-//     ],
-
-//     uttarpradesh: [
-//         { label: "Lucknow", value: "lucknow" },
-//         { label: "Kanpur", value: "kanpur" },
-//     ],
-// };
-//to address overlapping issue with city and state dropdown
-// const states = Object.keys(stateCityMapping).map((key) => ({
-//     label: key.charAt(0).toUpperCase() + key.slice(1),
-//     value: key,
-// }));
-
-const customStyles = {
-    menu: (provided) => ({
-        ...provided,
-        zIndex: 9999, // Prevent overlap
-    }),
-};
 
 function AddBusiness() {
     const selectedUser = (state) => state.auth.user || "";
     const user = useSelector(selectedUser);
     const userId = user.id || "";
+    const [stateCityMapping, setStateCityMapping] = useState({});
 
     const [selectedFiles1, setSelectedFiles1] = useState([]);
     const [selectedFiles2, setSelectedFiles2] = useState([]);
@@ -139,6 +25,29 @@ function AddBusiness() {
     const location = useLocation();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchCityState = async () => {
+            try {
+                const response = await fetch("/texts/stateCityMapping.json");
+                if (!response.ok) throw new Error("Failed to fetch City - States");
+                const data = await response.json();
+                setStateCityMapping(data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching State-cities:", error);
+                setLoading(false);
+            }
+        };
+        fetchCityState();
+    }, []);
+
+    const states = Object.keys(stateCityMapping).map((key) => ({
+        label: key.charAt(0).toUpperCase() + key.slice(1),
+        value: key,
+    }));
+
+    console.log("444 ::", states);
 
     const handleClose = () => {
         if (location.state?.from) {
@@ -269,17 +178,22 @@ function AddBusiness() {
     const [selectedCity, setSelectedCity] = useState(null);
     const [cityOptions, setCityOptions] = useState([]);
 
-    console.log("state 1111 :", selectedState);
-    console.log("state 2222 :", selectedCity);
-
     // Handle state change
     const handleStateChange = (selected) => {
-        setSelectedState(selected);
-        // setCityOptions(stateCityMapping[selected?.value] || []);
+        const newCityOptions = stateCityMapping[selected?.value] || [];
+        console.log("Available cities for", selected?.value, ":", newCityOptions);
+
+        setSelectedState(selected?.value);
+        setCityOptions(newCityOptions);
         setSelectedCity(null);
-        formik.setFieldValue("state", selected?.name || "");
+
+        formik.setFieldValue("state", selected?.value || "");
         formik.setFieldValue("city", "");
     };
+
+    useEffect(() => {
+        console.log("555 ::", cityOptions);
+    }, [cityOptions]);
 
     //Handle file change one
     const [selectedPreviewIndex, setSelectedPreviewIndex] = useState(0);
@@ -634,13 +548,18 @@ function AddBusiness() {
 
                                             <div className="space-y-6">
                                                 {/* State Dropdown */}
-                                                <div className="relative z-0 w-full group mb-4">
+                                                <div className="w-full group mb-4">
+                                                    {" "}
+                                                    {/* Removed relative z-0 */}
                                                     <label className="block text-lg font-medium text-gray-700 mb-1">
                                                         Select State
                                                     </label>
-                                                    <StateSelect
-                                                        countryid={101}
-                                                        value={formik.values.state}
+                                                    <Select
+                                                        options={states}
+                                                        value={
+                                                            states.find((option) => option.value === formik.values.state) ||
+                                                            selectedState
+                                                        }
                                                         onChange={handleStateChange}
                                                         placeholder="Choose a state"
                                                         styles={{
@@ -655,17 +574,18 @@ function AddBusiness() {
                                                 </div>
 
                                                 {/* City Dropdown */}
-                                                <div className="relative z-0 w-full group mb-4">
+                                                <div className=" w-full group mb-4">
                                                     <label className="block text-lg font-medium text-gray-700 mb-1">
                                                         Select City
                                                     </label>
-                                                    <CitySelect
-                                                        countryid={101}
-                                                        stateid={selectedState?.id}
-                                                        value={formik.values.name}
+                                                    <Select
+                                                        options={cityOptions.map((city) => ({ value: city, label: city }))} // Transform here
+                                                        value={cityOptions
+                                                            .map((city) => ({ value: city, label: city }))
+                                                            .find((option) => option.value === formik.values.city)}
                                                         onChange={(selected) => {
-                                                            setSelectedCity(selected.name);
-                                                            formik.setFieldValue("city", selected?.value.name || "");
+                                                            setSelectedCity(selected);
+                                                            formik.setFieldValue("city", selected?.value || "");
                                                         }}
                                                         placeholder="Choose a city"
                                                         styles={{
@@ -1515,4 +1435,4 @@ function AddBusiness() {
     );
 }
 
-export default AddBusiness;                             
+export default AddBusiness;

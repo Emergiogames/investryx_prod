@@ -379,7 +379,7 @@ const appRouter = createBrowserRouter([
         element: <NotFound />,
     },
     {
-        path: "/chatUsersAll",
+        path: "/connectionAll",
         element: (
             <>
                 <ChatList />

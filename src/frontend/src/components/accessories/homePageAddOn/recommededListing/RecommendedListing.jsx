@@ -24,7 +24,6 @@ const RecommendedListing = ({ props }) => {
 
     const handleViewPost = (postData) => {
         const profile = postData?.entity_type;
-        console.log("555555555 ", postData);
 
         switch (profile) {
             case "business":

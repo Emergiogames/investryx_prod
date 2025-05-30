@@ -76,7 +76,7 @@ function ViewPostBus() {
                 .then((response) => {
                     if (response.data.status === true) {
                         toast.success("chat accessing");
-                        navigate("/chatUsersAll", { state: { roomData: response.data } });
+                        navigate("/connectionAll", { state: { roomData: response.data } });
                     }
                 })
                 .catch((error) => {
