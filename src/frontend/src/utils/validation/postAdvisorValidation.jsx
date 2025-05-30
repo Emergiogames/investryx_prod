@@ -20,8 +20,6 @@ export const validationAdvisorSchema = Yup.object({
     .trim()
     .required("Industry is required")
     .matches(/^\S+.*\S$/, "Industry cannot contain only spaces"),
-  // interested_in: Yup.string()
-  //   .trim()
-  //   .required("Area of Interest is required")
-  //   .matches(/^\S+.*\S$/, "Single description cannot contain only spaces"),
+  company: Yup.string()
+    .max(99, "Company name must be at most 100 characters"),
 });

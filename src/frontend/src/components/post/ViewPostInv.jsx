@@ -28,37 +28,11 @@ function ViewPostInv() {
     const postName = post.name;
     const postState = post.state;
     const postCity = post.city;
-    const postOffering = post.offering;
-    const postAddressOne = post.address_1;
-    const postAddressTwo = post.address_2;
     const postDescription = post.description;
-    const postPin = post.pin;
-    const postReason = post.reason;
-    const postIncomeSource = post.income_source;
     const postProfileSummary = post.profile_summary;
     const postLocationInterested = post.location_interested;
     const postEvaluatingAspects = post.evaluating_aspects;
     const postPreference = post.preference;
-    const postInitial = post.initial;
-    const postProjROI = post.proj_ROI;
-    const postAvgMonthlySales = post.avg_monthly_sales;
-    const postLocationsAvailable = post.locations_available;
-    const postTotalOutlets = post.total_outlets;
-    const postYrPeriod = post.yr_period;
-    const postSupports = post.supports;
-    const postServices = post.services;
-    const postMinSpace = post.min_space;
-    const postMaxSpace = post.max_space;
-    const postBrandFee = post.brand_fee;
-    const postStaff = post.staff;
-    const postInterestedIn = post.interested_in;
-    const postRole = post.role;
-    const postDesignation = post.designation;
-    const postInterestedIndustry = post.interested_industry;
-    const postInterestedLocation = post.interested_location;
-    const postYrExperience = post.yr_experiance;
-    const postFactorsLooking = post.factors_looking;
-    const postAboutCompany = post.about_company;
     const postRangeStart = post.range_starting;
     const postRangeEnd = post.range_ending;
     const postDate = formatDistanceToNow(new Date(post.listed_on), {
@@ -67,20 +41,8 @@ function ViewPostInv() {
 
     // Column 1
     const postSingDes = post.single_desc.slice(0, 60);
-    const postEstablish = post.establish_yr;
     const postIndustry = post.industry;
-    const postEmployees = post.employees;
-    const postEntity = post.entity;
-    const postAvgMonthly = post.avg_monthly;
-    const postLatestYearly = post.latest_yearly;
-    const postEbitda = post.ebitda;
-    const postRate = post.rate;
-    const postSaleType = post.type_sale;
     const postUrl = post.url;
-    const postTopSelling = post.top_selling;
-    const postFeatures = post.features;
-    const postFacility = post.facility;
-    const postAskingPrice = post.asking_price;
     const postCompany = post.company;
 
     // Image and Documents
@@ -120,7 +82,7 @@ function ViewPostInv() {
                 .then((response) => {
                     if (response.data.status === true) {
                         toast.success("chat accessing");
-                        navigate("/chatUsersAll", { state: { roomData: response.data } });
+                        navigate("/connectionAll", { state: { roomData: response.data } });
                     }
                 })
                 .catch((error) => {
@@ -298,11 +260,7 @@ function ViewPostInv() {
                             </ul>
                             {/* buttons  */}
                             <div className=" lg:flex justify-evenly ">
-                                {/* <div className="bg-yellow-300 hover:bg-yellow-400 p-3  m-4 px-7 text-xl font-semibold rounded-lg">
-                  Buy Now
-                </div> */}
-
-                                {userId === postUser ? null : (
+                            {userId === postUser ? null : (
                                     <div
                                         onClick={
                                             planStatus
