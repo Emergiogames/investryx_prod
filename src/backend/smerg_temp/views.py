@@ -40,7 +40,8 @@ class LoginView(APIView):
                     token = Token.objects.create(user=user)
                     token.save()
                 token = Token.objects.get(user=user)
-                return Response({'status': True, 'token': token.key})
+                return Response({'status': True, 'token': token.key,'is_superuser': user.is_superuser,
+                'is_staff': user.is_staff,})
         return Response({'status': False, 'message': 'Invalid credentials'})
 
 # User details
