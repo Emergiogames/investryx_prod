@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {  toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { adminBannerSubList, adminBannerSubPost, adminDeleteBannerSub } from "../../services/admin/apiMethods";
-import { BASE_URL } from "../../constants/baseUrls";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 const BannerListSub = () => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -47,9 +47,9 @@ const BannerListSub = () => {
 
     const filteredPosts = postStates?.filter((post) => post?.type.toString().includes(searchTerm));
 
-    console.log('777', searchTerm);
-    console.log('771', filteredPosts);
-    
+    console.log("777", searchTerm);
+    console.log("771", filteredPosts);
+
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredPosts?.slice(indexOfFirstPost, indexOfLastPost);

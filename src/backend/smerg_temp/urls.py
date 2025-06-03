@@ -29,5 +29,4 @@ urlpatterns = [
     path('admin_create/<int:id>', Adminview.as_view()),
     path('total_timespent', TotalTimeSpentView.as_view()),
 
-
 ]

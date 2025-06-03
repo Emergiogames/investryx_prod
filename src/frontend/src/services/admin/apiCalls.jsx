@@ -1,55 +1,44 @@
-import {  toast } from 'react-toastify';
+
 import { store } from "../../utils/context/store";
 import { adminApi } from "./api";
 import { AdminLogout } from "../../utils/context/reducers/adminAuthSlice";
 
-const adminApiCalls = async(method, url, data) => {
-  return new Promise(async(resolve, reject) => {
+export const adminApiCalls = async (method, url, data = null) => {
     try {
-      let response, error;
+        let response;
 
-      if (method === "post") {
-        console.log("in api call", data);
-        response = await adminApi.post(url, data).catch((err) => {
-          error = err;
-        });
-      } else if (method === "get") {
-        response = await adminApi.get(url, data).catch((err) => {
-          error = err;
-        });
-      }
-      else if (method === "put") {
-        response = await adminApi.put(url, data).catch((err) => {
-          error = err;
-        });
-      }
-       else if (method === "patch") {
-        response = await adminApi.patch(url, data).catch((err) => {
-          error = err;
-        });
-      } else if (method === "delete") {
-        response = await adminApi.delete(url, data).catch((err) => {
-          error = err;
-        });
-      }
-      
-
-      if (response) {
-        resolve(response);
-      } else if (error) {
-        if (error.response.status == 401) {
-          toast.error("You are not Authorized");
-          store.dispatch(AdminLogout(null));
+        switch (method.toLowerCase()) {
+            case "post":
+                response = await adminApi.post(url, data);
+                break;
+            case "get":
+                response = await adminApi.get(url, { params: data }); // Ensure query params are passed correctly
+                break;
+            case "patch":
+                response = await adminApi.patch(url, data);
+                break;
+            case "put":
+                response = await adminApi.put(url, data);
+                break;
+            case "delete":
+                response = await adminApi.delete(url);
+                break;
+            default:
+                throw new Error(`Unsupported HTTP method: ${method}`);
         }
-        console.log(error);
 
-        reject(error?.response?.data);
-      }
-
+        return response;
     } catch (error) {
-      reject(err.response.data);
-    }
-  })
-}
+        const errorMsg = error?.response?.data || error?.message || "An unexpected error occurred";
+        console.log("error 1:", error);
 
-export default adminApiCalls
+        if (error?.response?.status === 401) {
+            store.dispatch(AdminLogout());
+            return Promise.reject(errorMsg);
+        }
+
+        console.log("error3", errorMsg);
+
+        return Promise.reject(errorMsg);
+    }
+};

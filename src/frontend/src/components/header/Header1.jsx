@@ -18,10 +18,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { logout } from "../../utils/context/reducers/authSlice";
 import {  toast } from 'react-toastify';
-import { BASE_URL } from "../../constants/baseUrls";
 import { leftPlan } from "../../services/user/apiMethods";
 
 function Header() {
+      const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();

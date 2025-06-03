@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { userProfile } from "../../utils/context/reducers/authSlice";
-import { BASE_URL } from "../../constants/baseUrls";
 import SliderButton from "../../components/accessories/slideButton/SlideButton";
 import ActivityBox from "../../components/accessories/activityBox/ActivityBox";
 
@@ -10,7 +9,7 @@ import {
     leftPlan,
     // getProfilePlan,
 } from "../../services/user/apiMethods";
-import {  toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { logout } from "../../utils/context/reducers/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -20,6 +19,8 @@ import InvestorProfileSub from "../../components/userProfileSub/InvestorProfileS
 import AdvisorProfileSub from "../../components/userProfileSub/AdvisorProfileSub";
 
 function UserProfile() {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const profileState = useSelector((state) => state.auth.profile);

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { BASE_URL } from "../../../constants/baseUrls";
 import BannerLoader from "../../loader/bannerLoader";
 
 const ImageSlider = ({ props }) => {
+      const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   const slides =  props?.data || props  || [];
 
   const [currentSlide, setCurrentSlide] = useState(0);

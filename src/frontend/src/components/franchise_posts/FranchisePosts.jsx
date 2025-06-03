@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { BASE_URL } from "../../constants/baseUrls";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
@@ -27,6 +26,8 @@ import { FaFileImage } from "react-icons/fa";
 import { IoBookmarks } from "react-icons/io5";
 
 function FranchisePosts({ post }) {
+        const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const navigate = useNavigate();
 
     const userData = (state) => state.auth.user || "";

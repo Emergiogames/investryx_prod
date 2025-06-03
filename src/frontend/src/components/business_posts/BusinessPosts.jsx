@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { BASE_URL } from "../../constants/baseUrls";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
@@ -17,7 +16,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import {  toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { getWishList, deleteWishList } from "../../services/post/apiMethods";
 import { postWishList } from "../../services/post/apiMethods";
@@ -26,6 +25,8 @@ import { IoBookmarks } from "react-icons/io5";
 import { FaFileImage } from "react-icons/fa";
 
 function BusinessPosts({ post }) {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const navigate = useNavigate();
 
     const userData = (state) => state.auth.user || "";

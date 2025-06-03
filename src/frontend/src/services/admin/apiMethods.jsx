@@ -1,5 +1,5 @@
 import { adminUrls } from "../endPoints";
-import adminApiCalls from "./apiCalls";
+import { adminApiCalls } from "./apiCalls";
 
 // Admin login
 
@@ -23,8 +23,6 @@ import adminApiCalls from "./apiCalls";
 export const adminPostLogin = async (adminData) => {
     try {
         const response = await adminApiCalls("post", adminUrls.login, adminData);
-        console.log("response from adminlogin :", response);
-
         return response;
     } catch (error) {
         throw error;
@@ -47,10 +45,10 @@ export const adminUserList = () => {
     });
 };
 
-export const adminUserBlock = (userId) => {
+export const adminUserBlock = (data) => {
     return new Promise((resolve, reject) => {
         try {
-            adminApiCalls("post", adminUrls.userBlock, userId)
+            adminApiCalls("post", adminUrls.postBlock, data)
                 .then((response) => {
                     resolve(response);
                 })
@@ -216,19 +214,19 @@ export const adminBannerPost = (data) => {
 };
 
 export const adminBannerSubPost = (data) => {
-  return new Promise((resolve, reject) => {
-      try {
-          adminApiCalls("post", adminUrls.bannerList, data)
-              .then((response) => {
-                  resolve(response);
-              })
-              .catch((err) => {
-                  reject(err);
-              });
-      } catch (error) {
-          reject(error);
-      }
-  });
+    return new Promise((resolve, reject) => {
+        try {
+            adminApiCalls("post", adminUrls.bannerList, data)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            reject(error);
+        }
+    });
 };
 
 export const adminDeleteBanner = (bannerId) => {
@@ -464,6 +462,245 @@ export const AdminNotificationApi = () => {
     return new Promise((resolve, reject) => {
         try {
             adminApiCalls("get", adminUrls.notificationData, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+//VIEW AND UPDATE EACH POST OF USER
+
+export const AdminEditAdvisor = (formData, postId) => {
+    return new Promise((resolve, reject) => {
+        try {
+            console.log("hello 2", postId);
+
+            const url = `admin/advisor/${postId}`;
+            adminApiCalls("patch", url, formData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const AdminEditFranchise = (formData, postId) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const url = `admin/franchise/${postId}`;
+            adminApiCalls("patch", url, formData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const AdminEditInvestor = (formData, postId) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const url = `admin/investor/${postId}`;
+            adminApiCalls("patch", url, formData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            console.error("errror ::", error);
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const AdminEditBusiness = (formData, postId) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const url = `admin/business${postId}`;
+            adminApiCalls("patch", url, formData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const dashboardData = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            adminApiCalls("get", adminUrls.dashboardData, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+//HANDLE STAFF USER
+
+export const GetStaffUser = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            adminApiCalls("get", adminUrls.staffUser, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+export const AddStaffUser = (superUserData) => {
+    return new Promise((resolve, reject) => {
+        try {
+            adminApiCalls("post", adminUrls.staffUser, superUserData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong with sending notification" });
+        }
+    });
+};
+
+export const UpdateStaffUser = (formData, postId) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const url = `/admin/admin_create/${postId}`;
+            adminApiCalls("patch", url, formData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const DeleteStaffUser = (id) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const deleteUrl = `/admin/admin_create/${id}`;
+            adminApiCalls("delete", deleteUrl)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+
+// DASHBOARD DATA
+export const GetDashboardDetails = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            adminApiCalls("get", adminUrls.dashboard, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const GetUserConn = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            adminApiCalls("get", adminUrls.userconn, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const GetUserConnCount = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            adminApiCalls("get", adminUrls.userconn_count, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const TimeSpend = (userId, startDate, endDate) => {
+    return new Promise((resolve, reject) => {
+        try {
+            // Fixed: removed spaces around '&' and '=' in query parameters
+            adminApiCalls("get", `${adminUrls.timespend}?user_id=${userId}&start_date=${startDate}&end_date=${endDate}`, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const GetReport = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            adminApiCalls("get", adminUrls.report, null)
                 .then((response) => {
                     resolve(response);
                 })

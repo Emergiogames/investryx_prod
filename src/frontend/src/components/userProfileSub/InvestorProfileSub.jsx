@@ -4,7 +4,6 @@ import { Popover } from "@headlessui/react";
 import { TbMasksTheater } from "react-icons/tb";
 import { getInvPost } from "../../services/user/apiMethods";
 import { CheckCircle } from "lucide-react";
-import { BASE_URL } from "../../constants/baseUrls";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { FaSearch } from "react-icons/fa";
@@ -17,6 +16,8 @@ import ManagePref from "./preferenceManagement/ManagePref";
 
 
 function InvestorProfileSub(props) {
+        const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const navigate = useNavigate();
     const recommPlan = props.recommPlan;
     const myPlan = props.myPlans;

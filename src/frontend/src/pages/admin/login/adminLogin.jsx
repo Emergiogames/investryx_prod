@@ -5,7 +5,7 @@ import {
   initialValues,
   validationSchema,
 } from "../../../utils/validation/adminValidation/adminLoginValidation";
-import {  toast } from 'react-toastify';
+import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { adminPostLogin } from "../../../services/admin/apiMethods";

@@ -14,6 +14,14 @@ import Plans from "../components/admin/Plans";
 import PostVerify from "../components/admin/PostVerify";
 import ReportList from "../components/admin/ReportList";
 import BannerListSub from "../components/admin/BannerListSub";
+import AdminViewUser from "../components/admin/ViewUser";
+import InvestorViewPost from "../components/admin/view-post/InvestorViewPost";
+import AdvisorViewPost from "../components/admin/view-post/AdvisorViewPost";
+import BusinessViewPost from "../components/admin/view-post/BusinessViewPost";
+import FranchiseViewPost from "../components/admin/view-post/FranchiseViewPost";
+import StaffUser from "../components/admin/staffUser";
+import ViewStaffUser from "../components/admin/ViewStaffUser";
+import EditStaffUser from "../components/admin/EditStaffUser";
 
 
 
@@ -34,6 +42,22 @@ export const adminRouter = {
       element: <PostVerify/>
     },
     {
+      path: "/admin/viewPostBusiness",
+      element: <BusinessViewPost />
+    },
+    {
+      path: "/admin/viewPostInvestor",
+      element: <InvestorViewPost />
+    },
+    {
+      path: "/admin/viewPostFranchise",
+      element: <FranchiseViewPost />
+    },
+    {
+      path: "/admin/viewPostAdvisor",
+      element: <AdvisorViewPost />
+    },
+    {
       path: "/admin/users",
       element: <UserList />,
     },
@@ -52,6 +76,10 @@ export const adminRouter = {
     {
       path: "/admin/admin_viewpost",
       element: <AdminViewPost />,
+    },
+    {
+      path: "/admin/admin_viewuser",
+      element: <AdminViewUser />,
     },
     {
       path: "/admin/banner",
@@ -76,7 +104,19 @@ export const adminRouter = {
     {
       path: "/admin/plans",
       element: <Plans/>,
-    }
+    },
+    {
+      path: "/admin/staff",
+      element: <StaffUser/>,
+    },
+    {
+      path: "/admin/viewStaff",
+      element: <ViewStaffUser/>,
+    },
+    {
+      path: "/admin/edit-staff",
+      element: <EditStaffUser/>,
+    },
   ],
 };
 

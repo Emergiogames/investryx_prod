@@ -5,12 +5,13 @@ import {
   adminBannerPost,
   adminDeleteBanner,
 } from "../../services/admin/apiMethods";
-import { BASE_URL } from "../../constants/baseUrls";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 const BannerList = () => {
+      const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-// import ReactApexChart from 'react-apexcharts';
-// import { chartData } from '../../services/admin/apiMethods';
+import ReactApexChart from 'react-apexcharts';
+import { chartData } from '../../services/admin/apiMethods';
 
 function ApexChart() {
   const [userData, setUserData] = useState([])

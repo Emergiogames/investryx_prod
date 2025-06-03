@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BellIcon } from "@heroicons/react/24/outline";
 import { Popover } from "@headlessui/react";
-import { BASE_URL_NOTIFICATION } from "../../constants/baseUrls";
 import { getNotification } from "../../services/user/apiMethods";
 import { formatDistanceToNow } from "date-fns";
 import Loader_block from "../../components/accessories/Loader/Loader_block";
 import { notificationUser } from "../../utils/context/reducers/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import {  toast } from 'react-toastify';
-
+import { toast } from "react-toastify";
 
 function DropNotification({ props }) {
+    const BASE_URL_NOTIFICATION = import.meta.env.VITE_BASE_URL_NOTIFICATION || "";
+
     const navigate = useNavigate();
     const dispatch = useDispatch(); // Initialize Redux dispatch
     // const [unseenCount] = useState(2);
@@ -54,7 +54,7 @@ function DropNotification({ props }) {
             try {
                 const data = JSON.parse(event.data);
                 console.log("Received notification:", data.notification);
-        
+
                 if (!data.notification?.created) {
                     toast.info(data.notification.title);
                 }
@@ -145,9 +145,14 @@ function DropNotification({ props }) {
                                                         </p>
                                                         <p className="mt-1 text-xs text-gray-300">
                                                             {notification?.created_on || notification.created
-                                                                ? formatDistanceToNow(new Date(notification.created_on || notification.created), {
-                                                                      addSuffix: true,
-                                                                  })
+                                                                ? formatDistanceToNow(
+                                                                      new Date(
+                                                                          notification.created_on || notification.created
+                                                                      ),
+                                                                      {
+                                                                          addSuffix: true,
+                                                                      }
+                                                                  )
                                                                 : null}
                                                         </p>
                                                     </div>

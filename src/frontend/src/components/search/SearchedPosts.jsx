@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { BASE_URL } from "../../constants/baseUrls";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
@@ -20,6 +19,8 @@ import { postWishList } from "../../services/post/apiMethods";
 import { FaImage } from "react-icons/fa6";
 
 function SearchedPosts({ props, setIsSearchOpen }) {
+        const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const navigate = useNavigate();
 
     const post = props;

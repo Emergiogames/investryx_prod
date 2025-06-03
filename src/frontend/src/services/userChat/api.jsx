@@ -1,6 +1,6 @@
 import axios from "axios";
 import {store} from "../../utils/context/store";
-import { BASE_URL_MAIN } from "../../constants/baseUrls";
+const BASE_URL_MAIN = import.meta.env.VITE_BASE_URL_MAIN || "";
 
 export const api = axios.create({
   withCredentials: true ,

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { userProfile } from "../../utils/context/reducers/authSlice";
-import { BASE_URL } from "../../constants/baseUrls";
 import SliderButton from "../../components/accessories/slideButton/SlideButton";
 import ActivityBox from "../../components/accessories/activityBox/ActivityBox";
 import { deleteUserAccount, leftPlan } from "../../services/user/apiMethods";
@@ -10,6 +9,8 @@ import { logout } from "../../utils/context/reducers/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 
 function UserProfile() {
+      const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const profileState = useSelector((state) => state.auth.profile);
