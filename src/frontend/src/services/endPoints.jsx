@@ -72,7 +72,6 @@ export const adminUrls = {
     dashboard: "/admin/dashboard",
     userconn: "/admin/userconnections",
     userconn_count: "/admin/userconnectioncount",
-    userconn_count: "/admin/userconnectioncount",
     timespend: "/admin/total_timespent",
     report: "/admin/report",
 };
