@@ -3,7 +3,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { BASE_URL } from "../../../../constants/baseUrls";
 import { formatDistanceToNow } from "date-fns";
 import { FaImage } from "react-icons/fa6";
 import { IoBookmarks } from "react-icons/io5";
@@ -11,6 +10,8 @@ import { FaFileImage } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const RecommendedListing = ({ props }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const navigate = useNavigate();
     const posts = props || [];
 

@@ -66,6 +66,15 @@ export const adminUrls = {
     postBlock: "/admin/block",
     getDetails: "/admin/get-details",
     chartData: "/admin/chart-data",
+
+    dashboardData: "/admin/dashboard",
+    staffUser: "/admin/admin_create",
+    dashboard: "/admin/dashboard",
+    userconn: "/admin/userconnections",
+    userconn_count: "/admin/userconnectioncount",
+    userconn_count: "/admin/userconnectioncount",
+    timespend: "/admin/total_timespent",
+    report: "/admin/report",
 };
 
 export const chatUrls = {

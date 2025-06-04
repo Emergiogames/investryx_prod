@@ -1,99 +1,69 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { AdminLogout } from '../../utils/context/reducers/adminAuthSlice'
-// import { getDashboardDetails } from '../../services/admin/apiMethods'
-// import ProfileChart from './ProfileChart'
+import { GetDashboardDetails } from '../../services/admin/apiMethods'
 
 function AdminProfile() {
-  // const selectedAdmin = (state) => state.adminAuth.admin
-  // const admin = useSelector(selectedAdmin)
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [dashboardData, setDashboardData] = useState(null)
 
   const handleLogout = () => {
-    dispatch(AdminLogout());
-    toast.info("Logout succussfull");
+    dispatch(AdminLogout())
+    toast.info("Logout successful")
     navigate("/admin/login")
   }
 
-  // const [isDashboardData, setDashboardDatas] = useState(null)
-
-  // useEffect(() => {
-  //   getDashboardDetails()
-  //     .then((response) => {
-  //       const dashboardDatas = response.data
-  //       setDashboardDatas(dashboardDatas)
-  //       // console.log("dashboardDatas",dashboardDatas);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching dashboard data:", error)
-  //     })
-  // },[])
+  useEffect(() => {
+    GetDashboardDetails()
+      .then((response) => {
+        setDashboardData(response.data)
+      })
+      .catch((error) => {
+        console.error("Error fetching dashboard details", error)
+      })
+  }, [])
 
   return (
-    <>
-      <div className='lg:w-full px-4 py-2 mr-2'>
-        <div className='flex w-full justify-center mb-6'>
-          <div className='flex bg-white w-full rounded-md shadow-md'>
-            <div className='lg:flex lg:p-8 lg:ml-0 justify-center gap-8'>
-              <div className="flex lg:ml-0 ml-10 justify-center">
-                <img
-                  className=" h-40 w-40 rounded-full"
-                  src="https://suhail101.pythonanywhere.com/media/profile/images/IMG-20240704-WA0000.jpg"
-                  alt=""
-                />
-              </div>
-              <div className='block lg:ml-8 ml-8 lg:py-0 py-2 lg:mt-0 text-center'>
-                <div className='font-semibold text-3xl pb-2'>Shaheen S</div>
-                <div className='pb-0'>shaheen@gmail.com</div>
-                <p></p>
-              </div>
-              <div className='flex flex-col lg:ml-6'>
-                <div className='flex lg:ml-0 justify-between items-center'>
-                  <div className='flex items-center px-2'>
-                    <button 
-                    className='lg:bg-black lg:text-white lg:h-10 lg:w-28 py-2 px-4 rounded  '>EditProfile</button>
-                  </div>
-                  <div className='flex items-center px-4'>
-                    <button 
-                    onClick={handleLogout}
-                    className=' lg:bg-black lg:text-white lg:h-10 lg:w-28 py-2 px-4 rounded ml-0 '>Logout</button>
-                  </div>
-                </div>
-                <div className='flex justify-between lg:mt-8 mt-2 cursor-pointer'>
-                  <div className='flex flex-col cursor-pointer items-center'>
-                    <div className="flex items-center justify-center w-16 h-16 rounded-full border-4 border-blue-500">
-                      <p className="font-medium text-lg">4</p>
-                    </div>
-                    <p className="text-sm mt-2">Users</p>
-                  </div>
-                  <div className='flex flex-col cursor-pointer items-center'>
-                    <div className="flex items-center justify-center w-16 h-16 rounded-full border-4 border-yellow-300">
-                      <p className="font-medium text-lg">12</p>
-                    </div>
-                    <p className="text-sm mt-2">Posts</p>
-                  </div>
-                  <div className='flex flex-col cursor-pointer items-center'>
-                    <div className="flex items-center justify-center w-16 h-16 rounded-full border-4 border-red-500">
-                      <p className="font-medium text-lg">0</p>
-                    </div>
-                    <p className="text-sm mt-2">Reports</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* <div className='flex justify-center'>
-                {isDashboardData && <ProfileChart isDashboardData={isDashboardData} />}
-              </div> */}
-
-            </div>
-          </div>
-          
-        </div>
+    <div className='w-full px-4 py-6'>
+      <div className='flex justify-between items-center mb-6'>
+        <h2 className='text-2xl font-semibold'>Admin Dashboard</h2>
+        <button 
+          onClick={handleLogout}
+          className='bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition'
+        >
+          Logout
+        </button>
       </div>
-    </>
+
+      {/* Dashboard Cards */}
+      <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+        <StatCard title="Users" count={dashboardData?.users_count || 0} color="blue" />
+        <StatCard title="Posts" count={dashboardData?.posts_count || 0} color="yellow" />
+        <StatCard title="Reports" count={dashboardData?.reports_count || 0} color="red" />
+        <StatCard title="Subscribers" count={dashboardData?.subscribe_count || 0} color="green" />
+      </div>
+    </div>
+  )
+}
+
+const StatCard = ({ title, count, color }) => {
+  const borderColors = {
+    blue: 'border-blue-500',
+    yellow: 'border-yellow-400',
+    red: 'border-red-500',
+    green: 'border-green-500',
+  }
+
+  return (
+    <div className='bg-white rounded-lg shadow p-4 flex flex-col items-center'>
+      <div className={`w-16 h-16 flex items-center justify-center rounded-full border-4 ${borderColors[color]}`}>
+        <span className='text-lg font-bold'>{count}</span>
+      </div>
+      <p className='mt-2 text-sm font-medium text-gray-700'>{title}</p>
+    </div>
   )
 }
 

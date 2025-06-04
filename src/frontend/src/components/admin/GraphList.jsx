@@ -6,7 +6,7 @@ function GraphList() {
   return (
     <div>
       <div>
-        <ApexChart />
+        {/* <ApexChart /> */}
       </div>
     </div>
   )

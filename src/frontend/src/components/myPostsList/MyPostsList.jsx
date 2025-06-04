@@ -5,13 +5,14 @@ import { TbMasksTheater } from "react-icons/tb";
 import { Popover } from "@headlessui/react";
 import { FaSearch } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
-import { BASE_URL } from "../../constants/baseUrls";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button } from "flowbite-react";
 // import { userProfile } from "../../utils/context/reducers/authSlice";
 
 function MyPostsList({ myPosts }) {
+        const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const navigate = useNavigate();
     const [moreOpenId, setMoreOpenId] = useState(null);
     const menuRef = useRef(null);

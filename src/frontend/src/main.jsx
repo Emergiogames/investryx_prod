@@ -12,6 +12,8 @@ import "flowbite";
 import ErrorBoundary from "./components/accessories/errorBoundarys/errorBoundary.jsx";
 import RoomsWebSocket from "./websocket/RoomsWebSocket.jsx";
 import GlobalStorageSync from "./utils/globalStorageSync/GlobalStorageSync.jsx";
+import GlobalAdminStorageSync from "./utils/globalStorageSync/GlobalAdminStorageSync.jsx";
+
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -22,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <ToastContainer position="top-right"/>
             <PersistGate loading={null} persistor={persistor}>
                 <GlobalStorageSync />
+                <GlobalAdminStorageSync />
                 <RoomsWebSocket />
                  <RouterProvider router={appRouter}>
                     <ScrollRestoration />

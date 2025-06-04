@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { deleteWishList, getWishList } from "../../services/post/apiMethods";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../../constants/baseUrls";
 import LoaderWishlist from "../../components/loader/LoaderWishlist";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {  toast } from 'react-toastify';
 
 function Saved() {
   const navigate = useNavigate();
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const [posts, setPost] = useState([]);
   const [loading, setLoading] = useState(false);

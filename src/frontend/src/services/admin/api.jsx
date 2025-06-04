@@ -1,16 +1,17 @@
 import axios from "axios";
 import { store } from "../../utils/context/store";
-import { BASE_URL_MAIN } from "../../constants/baseUrls";
+
+const BASE_URL_MAIN = import.meta.env.VITE_BASE_URL_MAIN || "";
 
 export const adminApi = axios.create({
-    baseURL: `${BASE_URL_MAIN}/api/`,
+    baseURL: `${BASE_URL_MAIN}/api`,
 });
 
 //INTERSEPTOR
 adminApi.interceptors.request.use(
     async (config) => {
         const state = store.getState();
-        const authToken = state.adminAuth.admin;
+        const authToken = state.adminAuth.token;
         config.headers["token"] = authToken;
         return config;
     },

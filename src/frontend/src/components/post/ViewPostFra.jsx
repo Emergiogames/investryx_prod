@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { BASE_URL } from "../../constants/baseUrls";
 import { getOneRooms } from "../../services/userChat/apiMethods";
 import { toast } from "react-toastify";
 import { use } from "react";
@@ -10,6 +9,8 @@ import { leftPlan } from "../../services/user/apiMethods";
 import { FaRegImages } from "react-icons/fa6";
 
 function ViewPostFra() {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const [planStatus, setPlanStatus] = useState(false);
     const [loader, setLoader] = useState(true);
     const { postId } = useParams();
@@ -292,24 +293,35 @@ function ViewPostFra() {
                             </ul>
                             {/* buttons  */}
                             <div className=" lg:flex justify-evenly ">
-                                {/* <div className="bg-yellow-300 hover:bg-yellow-400 p-3  m-4 px-7 text-xl font-semibold rounded-lg">
-                  Buy Now
-                </div> */}
-                                {!loader ? (
-                                    userId === postUser ? null : (
-                                        <div
-                                            onClick={
-                                                planStatus
-                                                    ? () => handleConnectRequest(receiverId)
-                                                    : () => (window.location.href = "/subscribe")
-                                            }
-                                            className="bg-yellow-300 hover:cursor-pointer hover:bg-yellow-400 p-3 m-4 px-7 text-xl font-semibold rounded-lg"
-                                        >
-                                            {planStatus ? "Request Connect" : "Subscribe"}
-                                        </div>
-                                    )
-                                ) : (
-                                    <div>Loading</div>
+                                {userId === postUser ? null : (
+                                    <div
+                                        onClick={
+                                            loader
+                                                ? undefined
+                                                : planStatus
+                                                ? () => handleConnectRequest(receiverId)
+                                                : () => (window.location.href = "/subscribe")
+                                        }
+                                        className={`bg-yellow-300 hover:cursor-pointer hover:bg-yellow-400 p-3 m-4 px-7 text-xl font-semibold rounded-lg flex items-center justify-center ${
+                                            loader ? "opacity-60 cursor-not-allowed" : ""
+                                        }`}
+                                        style={{ minWidth: "180px" }}
+                                    >
+                                        {loader ? (
+                                            <svg className="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24">
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                    fill="none"
+                                                />
+                                            </svg>
+                                        ) : null}
+                                        {loader ? "Checking..." : planStatus ? "Request Connect" : "Subscribe"}
+                                    </div>
                                 )}
                             </div>
                         </div>

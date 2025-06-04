@@ -7,7 +7,6 @@ import { formatDistanceToNow } from "date-fns";
 import { FaImage } from "react-icons/fa6";
 import { IoBookmarks } from "react-icons/io5";
 import { FaFileImage } from "react-icons/fa";
-import { BASE_URL } from "../../constants/baseUrls";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getWishList, deleteWishList, postWishList } from "../../services/post/apiMethods";
@@ -15,6 +14,8 @@ import { toast } from "react-toastify";
 import SinglePostLoader from "../loader/SinglePostLoader"; //SHOW 4 SKELETON
 
 const SinglePostAtExplore = ({ props, loading }) => {
+        const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const [wishPosts, setWishlistData] = useState([]);
     const [isSavedByUser, setIsSavedByUser] = useState(false);
     // const [loading, setLoading] = useState(false);

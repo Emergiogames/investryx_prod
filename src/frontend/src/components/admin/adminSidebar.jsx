@@ -26,26 +26,6 @@ function AdminSidebar() {
 
   return (
     <div className="sm:w-0 md:w-4/12 max-w-72 block justify-end sm:p-0 md:p-2">
-      {/* <button
-        type="button"
-        className="inline-flex z-auto items-center p-0 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-        onClick={toggleSidebar}
-      >
-        <span className="sr-only">Toggle sidebar</span>
-        <svg
-          className="w-6 h-6"
-          aria-hidden="true"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            clipRule="evenodd"
-            fillRule="evenodd"
-            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-          ></path>
-        </svg>
-      </button> */}
 
       <aside
         id="logo-sidebar"
@@ -397,9 +377,12 @@ function AdminSidebar() {
                 <span className="ms-3">Add Plans</span>
               </Link>
             </li>
-            {/* <li>
-                    <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                      <svg
+            <li>
+              <Link
+                to={"/admin/staff"}
+                className="flex items-center p-2 text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100  00 dark:hover:bg-gray-700 dark:text-white group"
+              >
+                <svg
                       className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
@@ -408,10 +391,29 @@ function AdminSidebar() {
                     >
                       <path stroke="currentColor" stroke-linecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                     </svg>
-                      
-                      <span className="flex-1 ms-3 whitespace-nowrap">Explore</span>
-                    </a>
-                </li> */}
+
+                <span className="ms-3">Staff-user</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to={"/admin/viewStaff"}
+                className="flex items-center p-2 text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100  00 dark:hover:bg-gray-700 dark:text-white group"
+              >
+                <svg
+                      className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 22 22"
+                    >
+                      <path stroke="currentColor" stroke-linecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                    </svg>
+
+                <span className="ms-3">View Staff-user</span>
+              </Link>
+            </li>
+           
             {/* <li>
                     <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                       <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" 
@@ -440,7 +442,7 @@ function AdminSidebar() {
                 </li> */}
           </ul>
           <ul className="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
-            <li>
+            {/* <li>
               <Link
                 to={"#"}
                 className="flex items-center p-2 text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group"
@@ -461,7 +463,7 @@ function AdminSidebar() {
 
                 <span className="ms-3">Settings</span>
               </Link>
-            </li>
+            </li> */}
             <li>
               <div
                 onClick={handleLogout}

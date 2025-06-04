@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { getClickRoom, getAllRooms, getApersonChat, getCurrentChat } from "../../services/userChat/apiMethods";
 import { useLocation, useNavigate } from "react-router-dom";
-import { BASE_URL, BASE_URL_CHAT } from "../../constants/baseUrls";
 import { useSelector } from "react-redux";
 import Messages from "../../components/chat/Messages";
 import { motion } from "framer-motion";
@@ -16,6 +15,9 @@ import RoomsShimmer from "../../components/accessories/chatShimmer/RoomsShimmer"
 import VoiceRecorder from "../../components/chat/VoiceRecorder";
 
 function ChatList() {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const BASE_URL_CHAT = import.meta.env.VITE_BASE_URL_CHAT || "";
+
     const location = useLocation();
     const navigate = useNavigate();
     const [playSendSound] = useSound(sendSound);

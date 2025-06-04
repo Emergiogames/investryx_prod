@@ -3,13 +3,14 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { BASE_URL } from "../../../../constants/baseUrls";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { FaImage } from "react-icons/fa6";
 import { IoBookmarks } from "react-icons/io5";
 
 function RecentListing({ recentActivitiesData }) {
+        const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const navigate = useNavigate();
     const posts = recentActivitiesData || [];
     const swiperRefRecent = useRef(null);

@@ -30,7 +30,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { logout, userProfile } from "../../utils/context/reducers/authSlice";
 import { toast } from "react-toastify";
-import { BASE_URL } from "../../constants/baseUrls";
 import DropNotification from "../../pages/notification/DropNotification";
 import Search from "../search/Search";
 
@@ -104,6 +103,8 @@ const howToData = [
 ];
 
 export default function Header() {
+        const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const navigate = useNavigate();

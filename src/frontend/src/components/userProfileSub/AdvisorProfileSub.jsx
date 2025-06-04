@@ -7,7 +7,6 @@ import { getAdvPost } from "../../services/user/apiMethods";
 import { FaSearch } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 import { CheckCircle } from "lucide-react";
-import { BASE_URL } from "../../constants/baseUrls";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProfileLeftBox from "../profileLeftBox/ProfileLeftBox";
@@ -16,6 +15,8 @@ import ManagePref from "./preferenceManagement/ManagePref";
 
 
 function AdvisorProfileSub(props) {
+        const BASE_URL = import.meta.env.VITE_BASE_URL;
+
     const navigate = useNavigate();
     const recommPlan = props.recommPlan;
     const myPlan = props.myPlans;

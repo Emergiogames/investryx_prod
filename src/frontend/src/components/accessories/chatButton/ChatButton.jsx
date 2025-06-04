@@ -3,9 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import {  toast } from 'react-toastify';
-import { BASE_URL_CHAT } from "../../../constants/baseUrls";
 import { notificationNumber } from "../../../utils/context/reducers/authSlice";
-import { to } from "@react-spring/web";
 
 const ChatButton = () => {
     const navigate = useNavigate();
