@@ -11,14 +11,11 @@ const adminAuthSlice = createSlice({
     reducers: {
         AdminLoginSuccess: (state, action) => {
             console.log("hello from login :", action.payload);
-
-            state.token = action.payload;
-            // state.admin = { token: action.payload.admin }; // optional
+            state.admin = action.payload.admin;
         },
 
         AdminLogout: (state) => {
             state.admin = null;
-            state.token = null;
             localStorage.setItem("adminLogout", Date.now()); // This triggers the storage event
         },
         //   logout: (state) => {

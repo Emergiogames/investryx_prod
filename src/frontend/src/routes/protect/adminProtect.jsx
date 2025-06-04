@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 function AdminProtect({ children }) {
   const navigate = useNavigate();
-  const selectAdmin = (state) => state.adminAuth.token;
+  const selectAdmin = (state) => state?.adminAuth?.admin?.token;
   const admin = useSelector(selectAdmin);
 
   useEffect(() => {

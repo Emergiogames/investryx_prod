@@ -5,9 +5,14 @@ import UserConn from "../../../components/admin/dashboard-components/UserConn";
 import UserConnCount from "../../../components/admin/dashboard-components/UserConnCount";
 import TimeSpendTotal from "../../../components/admin/dashboard-components/TimeSpendTotal";
 import AdminReport from "../../../components/admin/dashboard-components/Report";
+import { useSelector } from "react-redux";
 // import GraphList from '../../../components/admin/GraphList'
 
 function AdminDashboard() {
+     const token = useSelector((state) => state?.admin?.token); // adjust path as per your store
+    console.log("admin token :", token);
+
+
     return (
         <div className="w-full flex flex-col justify-self-center items-center">
             <div className="w-11/12 lg:mr-10">

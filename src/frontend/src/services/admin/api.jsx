@@ -11,7 +11,7 @@ export const adminApi = axios.create({
 adminApi.interceptors.request.use(
     async (config) => {
         const state = store.getState();
-        const authToken = state.adminAuth.token;
+        const authToken = state?.adminAuth?.admin?.token;
         config.headers["token"] = authToken;
         return config;
     },
