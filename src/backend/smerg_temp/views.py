@@ -897,8 +897,8 @@ class MonthlyUserJoinCount(APIView):
             return Response({'status': False, 'message': 'Invalid month or year format'}, status=400)
 
         users_count = UserProfile.objects.filter(
-            created_at__year=year,
-            created_at__month=month
+            date_joined__year=year,
+            date_joined__month=month
         ).count()
 
         return Response({
