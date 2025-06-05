@@ -874,3 +874,36 @@ class TotalTimeSpentView(APIView):
                     return Response({'status': False, 'message': 'User does not exist'})
             return Response({'status': False, 'message': 'User does not exist'})
         return Response({'status': False, 'message': 'Token does not exist'})
+    
+# monthly joining users count
+
+
+class MonthlyUserJoinCount(APIView):
+    @swagger_auto_schema(
+        operation_description="Get count of users who joined in a specific month and year",
+        responses={200: "User join count retrieved", 400: "Invalid request"}
+    )
+    def get(self, request):
+        month = request.query_params.get('month')  # e.g. 6 for June
+        year = request.query_params.get('year')    # e.g. 2025
+
+        if not month or not year:
+            return Response({'status': False, 'message': 'Month and Year are required'}, status=400)
+
+        try:
+            month = int(month)
+            year = int(year)
+        except ValueError:
+            return Response({'status': False, 'message': 'Invalid month or year format'}, status=400)
+
+        users_count = UserProfile.objects.filter(
+            created_at__year=year,
+            created_at__month=month
+        ).count()
+
+        return Response({
+            'status': True,
+            'year': year,
+            'month': month,
+            'user_joined_count': users_count
+        })
