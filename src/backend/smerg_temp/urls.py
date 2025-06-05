@@ -28,5 +28,6 @@ urlpatterns = [
     path('admin_create', Adminview.as_view()),
     path('admin_create/<int:id>', Adminview.as_view()),
     path('total_timespent', TotalTimeSpentView.as_view()),
+    path('userjoincount',MonthlyUserJoinCount.as_view()),
 
 ]
