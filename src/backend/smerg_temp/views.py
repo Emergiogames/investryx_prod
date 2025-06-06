@@ -880,27 +880,25 @@ class TotalTimeSpentView(APIView):
 
 class MonthlyUserJoinCount(APIView):
     @swagger_auto_schema(
-        operation_description="Get count of users who joined in a specific month and year",
+        operation_description="Get count of non-admin users who joined in a specific month and year",
         responses={200: "User join count retrieved", 400: "Invalid request"}
     )
     def get(self, request):
-        month = request.query_params.get('month')  # e.g. 6 for June
-        year = request.query_params.get('year')    # e.g. 2025
-
+        month = request.query_params.get('month')  # e.g. '6' for June
+        year = request.query_params.get('year')    # e.g. '2025'
         if not month or not year:
             return Response({'status': False, 'message': 'Month and Year are required'}, status=400)
-
         try:
             month = int(month)
             year = int(year)
         except ValueError:
             return Response({'status': False, 'message': 'Invalid month or year format'}, status=400)
-
+        # Count users who joined in the given month and year (excluding superusers)
         users_count = UserProfile.objects.filter(
             date_joined__year=year,
-            date_joined__month=month
+            date_joined__month=month,
+            is_superuser=False
         ).count()
-
         return Response({
             'status': True,
             'year': year,
