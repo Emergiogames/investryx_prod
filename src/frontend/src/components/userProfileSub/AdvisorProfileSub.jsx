@@ -85,7 +85,7 @@ function AdvisorProfileSub(props) {
                     <div className="xl:w-1/4  ">
                         {/* box 1 */}
                         <ProfileLeftBox user={user} deleteHandler={deleteHandler} />
-                        <ManagePref user={user} deleteHandler={deleteHandler} />
+                        {/* <ManagePref user={user} deleteHandler={deleteHandler} /> */}
 
                     </div>
 

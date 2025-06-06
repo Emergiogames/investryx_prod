@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getOneRooms } from "../../services/userChat/apiMethods";
 import { MdOutlineLocationOn } from "react-icons/md";
 import Button from "@mui/material/Button";
@@ -10,16 +10,14 @@ import { leftPlan } from "../../services/user/apiMethods";
 import { FaRegImages } from "react-icons/fa6";
 
 function ViewPostBus() {
-        const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
 
     const [planStatus, setPlanStatus] = useState(false);
     const [loader, setLoader] = useState(true);
-    const { postId } = useParams();
     const location = useLocation();
     const post = location.state?.post;
-    const selectedUserId = (state) => state.auth.user.id || "";
+    const selectedUserId = (state) => state?.auth?.user?.id || "";
     const userId = useSelector(selectedUserId);
-    console.log("user ud from view detailedInvestor ::", userId);
 
     const navigate = useNavigate();
 
@@ -262,7 +260,9 @@ function ViewPostBus() {
                                 {userId === postUser ? null : (
                                     <div
                                         onClick={
-                                            loader
+                                            !userId
+                                                ? () => navigate("/login")
+                                                : loader
                                                 ? undefined
                                                 : planStatus
                                                 ? () => handleConnectRequest(receiverId)
@@ -273,7 +273,7 @@ function ViewPostBus() {
                                         }`}
                                         style={{ minWidth: "180px" }}
                                     >
-                                        {loader ? (
+                                        {loader && userId ? (
                                             <svg className="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24">
                                                 <circle
                                                     className="opacity-25"
@@ -286,7 +286,13 @@ function ViewPostBus() {
                                                 />
                                             </svg>
                                         ) : null}
-                                        {loader ? "Checking..." : planStatus ? "Request Connect" : "Subscribe"}
+                                        {!userId
+                                            ? "Sign In"
+                                            : loader
+                                            ? "Checking..."
+                                            : planStatus
+                                            ? "Request Connect"
+                                            : "Subscribe"}
                                     </div>
                                 )}
                             </div>

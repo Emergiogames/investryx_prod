@@ -73,7 +73,7 @@ export default function TimeSpendTotal() {
                     disabled={loading}
                     className="bg-amber-400 text-white font-bold px-6 py-2 rounded-lg mt-2 md:mt-0 hover:bg-amber-500 transition"
                 >
-                    {loading ? "Loading..." : "Fetch"}
+                    {loading ? "Loading..." : "Find"}
                 </button>
             </form>
             {error && <div className="text-red-600 mb-2">{error}</div>}
