@@ -18,8 +18,10 @@ function ViewPostAdv() {
     const post = location.state?.post;
     console.log("11 ::", post);
 
-    const selectedUserId = (state) => state.auth.user.id || "";
+    const selectedUserId = (state) => state?.auth?.user?.id || null;
     const userId = useSelector(selectedUserId);
+    console.log("22 ::", userId);
+    
 
     const navigate = useNavigate();
 
@@ -168,7 +170,7 @@ function ViewPostAdv() {
                                                 <td className="py-2">{postDescription ? postDescription : "N/A"}</td>
                                             </tr> */}
                                             <tr className="border-b">
-                                                <td className="py-2 font-semibold">Advisor's handson Industry</td>
+                                                <td className="py-2 font-semibold">Advisor's hands-on Industry</td>
                                                 <td className="py-2">
                                                     {postIndustry
                                                         ? (() => {
@@ -227,7 +229,9 @@ function ViewPostAdv() {
                                 {userId === postUser ? null : (
                                     <div
                                         onClick={
-                                            loader
+                                            !userId
+                                                ? () => navigate("/login")
+                                                : loader
                                                 ? undefined
                                                 : planStatus
                                                 ? () => handleConnectRequest(receiverId)
@@ -238,7 +242,7 @@ function ViewPostAdv() {
                                         }`}
                                         style={{ minWidth: "180px" }}
                                     >
-                                        {loader ? (
+                                        {loader && userId ? (
                                             <svg className="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24">
                                                 <circle
                                                     className="opacity-25"
@@ -251,7 +255,13 @@ function ViewPostAdv() {
                                                 />
                                             </svg>
                                         ) : null}
-                                        {loader ? "Checking..." : planStatus ? "Request Connect" : "Subscribe"}
+                                        {!userId
+                                            ? "Sign In"
+                                            : loader
+                                            ? "Checking..."
+                                            : planStatus
+                                            ? "Request Connect"
+                                            : "Subscribe"}
                                     </div>
                                 )}
                             </div>

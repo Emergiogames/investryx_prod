@@ -86,7 +86,7 @@ function InvestorProfileSub(props) {
                     <div className="xl:w-1/4  ">
                         {/* box two */}
                         <ProfileLeftBox user={user} deleteHandler={deleteHandler} />
-                        <ManagePref user={user} deleteHandler={deleteHandler} />
+                        {/* <ManagePref user={user} deleteHandler={deleteHandler} /> */}
                     </div>
 
                     {/* middle box */}

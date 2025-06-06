@@ -88,7 +88,7 @@ function FranchiseProfileSub(props) {
                         {/* box 1 */}
 
                         <ProfileLeftBox user={user} deleteHandler={deleteHandler} />
-                        <ManagePref user={user} deleteHandler={deleteHandler} />
+                        {/* <ManagePref user={user} deleteHandler={deleteHandler} /> */}
 
                     </div>
 

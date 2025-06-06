@@ -64,7 +64,7 @@ function BusinessProfileSub(props) {
                     {/* Left box  1*/}
                     <div className="xl:w-1/4">
                         <ProfileLeftBox user={user} deleteHandler={deleteHandler} />
-                        <ManagePref user={user} deleteHandler={deleteHandler} />
+                        {/* <ManagePref user={user} deleteHandler={deleteHandler} /> */}
                     </div>
                     {/* middle box */}
                     <div className="xl:w-1/2 min-h-[90vh]">

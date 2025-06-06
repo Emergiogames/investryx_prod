@@ -83,7 +83,6 @@ export const adminUserBlock = (data) => {
 export const PostBlockUnblock = (userId, type) => {
     return new Promise((resolve, reject) => {
         try {
-            console.log("useridss", userId, type);
             const url = `/admin/verify-posts/${userId.postId}`; // Fixed the template literal
             adminApiCalls("patch", url, { action: type })
                 .then((response) => {
@@ -101,7 +100,6 @@ export const PostBlockUnblock = (userId, type) => {
 export const adminBusinessList = () => {
     return new Promise((resolve, reject) => {
         try {
-            // console.log('business list api side');
 
             adminApiCalls("get", adminUrls.businessList, null)
                 .then((response) => {
@@ -408,10 +406,26 @@ export const postAdminPlan = (data) => {
     });
 };
 
+export const updatAdminPlan = (id,planData) => { 
+    return new Promise((resolve, reject) => {
+        try {
+            adminApiCalls("put", `${adminUrls.plans}/${id}`, planData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
 export const deleteAdminPlan = (id) => {
     return new Promise((resolve, reject) => {
         try {
-            const deleteUrl = `admin/plan/${id}`;
+            const deleteUrl = `admin/plans/${id}`;
             adminApiCalls("delete", deleteUrl)
                 .then((response) => {
                     resolve(response);

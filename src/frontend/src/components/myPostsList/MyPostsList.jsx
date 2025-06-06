@@ -79,7 +79,7 @@ function MyPostsList({ myPosts }) {
                                         ? `${BASE_URL}${post.image1}`
                                         : post.logo
                                         ? `${BASE_URL}${post.logo}`
-                                        : "https://dummyimage.com/200x200/000/fff"
+                                        : "/images/no-image-icon.png"
                                 }
                                 className="relative object-cover rounded-l-2xl w-24 h-24 md:max-h-42 md:max-w-44 cursor-pointer"
                                 alt="Post thumbnail"

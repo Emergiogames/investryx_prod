@@ -19,7 +19,7 @@ function ViewPostInv() {
     const { postId } = useParams();
     const location = useLocation();
     const post = location.state?.post;
-    const selectedUserId = (state) => state.auth.user.id || "";
+    const selectedUserId = (state) => state?.auth?.user?.id || "";
     const userId = useSelector(selectedUserId);
     console.log("user ud from view detailedInvestor ::", userId);
 
@@ -260,7 +260,9 @@ function ViewPostInv() {
                                 {userId === postUser ? null : (
                                     <div
                                         onClick={
-                                            loader
+                                            !userId
+                                                ? () => navigate("/login")
+                                                : loader
                                                 ? undefined
                                                 : planStatus
                                                 ? () => handleConnectRequest(receiverId)
@@ -271,7 +273,7 @@ function ViewPostInv() {
                                         }`}
                                         style={{ minWidth: "180px" }}
                                     >
-                                        {loader ? (
+                                        {loader && userId ? (
                                             <svg className="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24">
                                                 <circle
                                                     className="opacity-25"
@@ -284,7 +286,13 @@ function ViewPostInv() {
                                                 />
                                             </svg>
                                         ) : null}
-                                        {loader ? "Checking..." : planStatus ? "Request Connect" : "Subscribe"}
+                                        {!userId
+                                            ? "Sign In"
+                                            : loader
+                                            ? "Checking..."
+                                            : planStatus
+                                            ? "Request Connect"
+                                            : "Subscribe"}
                                     </div>
                                 )}
                             </div>

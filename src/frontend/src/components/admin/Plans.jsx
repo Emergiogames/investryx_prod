@@ -5,6 +5,7 @@ import {
   getAdminPlans,
   postAdminPlan,
   deleteAdminPlan,
+  updatAdminPlan
 } from "../../services/admin/apiMethods";
 import {  toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
@@ -24,6 +25,7 @@ function Plans() {
   const [blockStatus, setBlockStatus] = useState("");
   const [newPlan, setNewPlan] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const fetchAttempted = useRef(false); // Ref to track if the fetch has been attempted
 
@@ -142,16 +144,52 @@ function Plans() {
 
   //delete current plan
   const [isDeletePopupVisible, setIsDeletePopupVisible] = useState(false);
-  const handleDeletePlan = (id) => {
-    setIsDeletePopupVisible(true);
-    deleteAdminPlan(id)
+  const handleDeletePlan = (planId) => {
+    // if (!window.confirm("Are you sure you want to delete this plan?")) return;
+    deleteAdminPlan(planId)
       .then((response) => {
-        if (response.data.status === true)
-          toast.success("Plan removed successfully");
+        if (response.data?.status === true) {
+          toast.success("Plan deleted successfully");
+          fetchPlans(); // <-- Refresh the plan list after deletion
+          setSelectedPlan(null); // Optionally close modal if open
+        } else {
+          toast.error("Failed to delete plan");
+        }
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
+        toast.error("Failed to delete plan");
       });
+  };
+
+  // handle update plan
+  const handleUpdatePlan = (plan) => {
+    setSelectedPlan(plan);
+    setIsUpdate(true);
+  };
+
+  // update plan submit
+  const handleUpdateSubmit = async (values, { resetForm }) => {
+    setIsSubmitting(true);
+    try {
+      await updatAdminPlan(values.id, values)
+        .then((response) => {
+          if (response.data.status === true) {
+            toast.success("Plan updated successfully");
+            fetchPlans();
+          }
+          setIsUpdate(false);
+          setSelectedPlan(null);
+        })
+        .catch((error) => {
+          toast.error("Failed to update plan");
+          console.error(error);
+        });
+      resetForm();
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return loading ? (
@@ -275,7 +313,187 @@ function Plans() {
         </div>
       ) : null}
 
-      {selectedPlan && (
+      {/* View/Update Plan Modal */}
+      {selectedPlan && (isUpdate ? (
+        <Formik
+          initialValues={{
+            id: selectedPlan.id,
+            name: selectedPlan.name || "",
+            rate: selectedPlan.rate || "",
+            description: Array.isArray(selectedPlan.description)
+              ? selectedPlan.description
+              : (selectedPlan.description?.plan?.features
+                  ? [
+                      ...(selectedPlan.description.plan.features.support ? [selectedPlan.description.plan.features.support] : []),
+                      ...(selectedPlan.description.plan.features.validity ? [selectedPlan.description.plan.features.validity] : []),
+                      ...(selectedPlan.description.plan.features.proposal_limit ? [selectedPlan.description.plan.features.proposal_limit] : []),
+                    ]
+                  : []),
+            time_period: selectedPlan.time_period || "",
+            post_number: selectedPlan.post_number || "",
+            feature: selectedPlan.feature || false,
+            recommend: selectedPlan.recommend || false,
+            type: selectedPlan.type || "business",
+          }}
+          validationSchema={validationSchema}
+          onSubmit={handleUpdateSubmit}
+          enableReinitialize
+        >
+          {({ values }) => (
+            <Form className="max-w-lg mx-auto p-4 bg-white shadow-md rounded-lg mt-9">
+              <div className="flex justify-between">
+                <h2 className="text-xl font-semibold mb-4">Update Plan</h2>
+                <div
+                  className="text-red-500 font-bold cursor-pointer"
+                  onClick={() => {
+                    setSelectedPlan(null);
+                    setIsUpdate(false);
+                  }}
+                >
+                  X
+                </div>
+              </div>
+              {/* Plan Name */}
+              <div className="mb-4">
+                <label className="block text-gray-700">Plan Name</label>
+                <Field
+                  type="text"
+                  name="name"
+                  className="w-full p-2 border rounded"
+                  placeholder="Plan Name"
+                />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-red-500"
+                />
+              </div>
+              {/* Rate */}
+              <div className="mb-4">
+                <label className="block text-gray-700">Rate</label>
+                <Field
+                  type="number"
+                  name="rate"
+                  className="w-full p-2 border rounded"
+                  placeholder="Rate"
+                />
+                <ErrorMessage
+                  name="rate"
+                  component="div"
+                  className="text-red-500"
+                />
+              </div>
+              {/* Description Points */}
+              <div className="mb-4">
+                <label className="block text-gray-700">
+                  Description Points
+                </label>
+                <FieldArray name="description">
+                  {({ push, remove }) => (
+                    <>
+                      {values.description &&
+                        values.description.map((_, index) => (
+                          <div key={index} className="flex items-center mb-2">
+                            <Field
+                              name={`description.${index}`}
+                              placeholder={`Point ${index + 1}`}
+                              className="flex-1 p-2 border rounded"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => remove(index)}
+                              className="ml-2 text-red-500"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      <button
+                        type="button"
+                        onClick={() => push("")}
+                        className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+                      >
+                        Add Point
+                      </button>
+                    </>
+                  )}
+                </FieldArray>
+              </div>
+              {/* Time Period */}
+              <div className="mb-4">
+                <label className="block text-gray-700">
+                  Time Period (in months)
+                </label>
+                <Field
+                  type="number"
+                  name="time_period"
+                  className="w-full p-2 border rounded"
+                  placeholder="Time Period"
+                />
+                <ErrorMessage
+                  name="time_period"
+                  component="div"
+                  className="text-red-500"
+                />
+              </div>
+              {/* Post Numbers */}
+              <div className="mb-4">
+                <label className="block text-gray-700">Post Numbers</label>
+                <Field
+                  type="number"
+                  name="post_number"
+                  className="w-full p-2 border rounded"
+                  placeholder="Post Numbers"
+                />
+                <ErrorMessage
+                  name="post_number"
+                  component="div"
+                  className="text-red-500"
+                />
+              </div>
+              {/* Feature */}
+              <div className="mb-4">
+                <label className="block text-gray-700">Feature</label>
+                <Field type="checkbox" name="feature" className="mr-2" />
+                <span>Enable feature</span>
+              </div>
+              {/* Recommend */}
+              <div className="mb-4">
+                <label className="block text-gray-700">Recommend</label>
+                <Field type="checkbox" name="recommend" className="mr-2" />
+                <span>Recommend this plan</span>
+              </div>
+              {/* Type */}
+              <div className="mb-4">
+                <label className="block text-gray-700">Type</label>
+                <Field
+                  as="select"
+                  name="type"
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="business">Business</option>
+                  <option value="investor">Investor</option>
+                  <option value="franchise">Franchise</option>
+                  <option value="advisor">Advisor</option>
+                </Field>
+                <ErrorMessage
+                  name="type"
+                  component="div"
+                  className="text-red-500"
+                />
+              </div>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Updating..." : "Update Plan"}
+              </button>
+            </Form>
+          )}
+        </Formik>
+      ) : (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black opacity-50"></div>
           <div className="bg-white rounded-lg p-8 z-10 relative max-w-4xl w-full">
@@ -386,7 +604,7 @@ function Plans() {
               {/* Update Button */}
               <div className="mt-6">
                 <button
-                  onClick={() => handleUpdatePlan(selectedPlan.id)}
+                  onClick={() => handleUpdatePlan(selectedPlan)}
                   className="bg-blue-500 text-2xl hover:bg-blue-600 text-white px-6 py-3 rounded-md"
                 >
                   Update
@@ -395,7 +613,7 @@ function Plans() {
             </div>
           </div>
         </div>
-      )}
+      ))}
 
       {newPlan && (
         <Formik
