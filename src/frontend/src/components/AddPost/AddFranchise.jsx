@@ -15,118 +15,6 @@ import {
 } from "../../utils/validation/postFranchiseValidation";
 import Loader from "../loader/loader";
 
-const stateCityMapping = {
-  karnataka: [
-    { label: "Bagalkot", value: "bagalkot" },
-    { label: "Bangalore Rural", value: "bangalore-rural" },
-    { label: "Bangalore Urban", value: "bangalore-urban" },
-    { label: "Belgaum", value: "belgaum" },
-    { label: "Bellary", value: "bellary" },
-    { label: "Bidar", value: "bidar" },
-    { label: "Vijayapura", value: "vijayapura" },
-    { label: "Chamarajanagar", value: "chamarajanagar" },
-    { label: "Chikkaballapur", value: "chikkaballapur" },
-    { label: "Chikkamagaluru", value: "chikkamagaluru" },
-    { label: "Chitradurga", value: "chitradurga" },
-    { label: "Dakshina Kannada", value: "dakshina-kannada" },
-    { label: "Davanagere", value: "davanagere" },
-    { label: "Dharwad", value: "dharwad" },
-    { label: "Gadag", value: "gadag" },
-    { label: "Hassan", value: "hassan" },
-    { label: "Haveri", value: "haveri" },
-    { label: "Kalaburagi", value: "kalaburagi" },
-    { label: "Kodagu", value: "kodagu" },
-    { label: "Kolar", value: "kolar" },
-    { label: "Koppal", value: "koppal" },
-    { label: "Mandya", value: "mandya" },
-    { label: "Mysore", value: "mysore" },
-    { label: "Raichur", value: "raichur" },
-    { label: "Ramanagara", value: "ramanagara" },
-    { label: "Shivamogga", value: "shivamogga" },
-    { label: "Tumkur", value: "tumkur" },
-    { label: "Udupi", value: "udupi" },
-    { label: "Uttara Kannada", value: "uttara-kannada" },
-    { label: "Vijayanagara", value: "vijayanagara" },
-    { label: "Yadgir", value: "yadgir" },
-  ],
-  maharashtra: [
-    { label: "Mumbai", value: "mumbai" },
-    { label: "Pune", value: "pune" },
-  ],
-  tamilNaduDistricts: [
-    { label: "Ariyalur", value: "ariyalur" },
-    { label: "Chengalpattu", value: "chengalpattu" },
-    { label: "Chennai", value: "chennai" },
-    { label: "Coimbatore", value: "coimbatore" },
-    { label: "Cuddalore", value: "cuddalore" },
-    { label: "Dharmapuri", value: "dharmapuri" },
-    { label: "Dindigul", value: "dindigul" },
-    { label: "Erode", value: "erode" },
-    { label: "Kallakurichi", value: "kallakurichi" },
-    { label: "Kanchipuram", value: "kanchipuram" },
-    { label: "Kanniyakumari", value: "kanniyakumari" },
-    { label: "Karur", value: "karur" },
-    { label: "Krishnagiri", value: "krishnagiri" },
-    { label: "Madurai", value: "madurai" },
-    { label: "Mayiladuthurai", value: "mayiladuthurai" },
-    { label: "Nagapattinam", value: "nagapattinam" },
-    { label: "Namakkal", value: "namakkal" },
-    { label: "Nilgiris", value: "nilgiris" },
-    { label: "Perambalur", value: "perambalur" },
-    { label: "Pudukkottai", value: "pudukkottai" },
-    { label: "Ramanathapuram", value: "ramanathapuram" },
-    { label: "Ranipet", value: "ranipet" },
-    { label: "Salem", value: "salem" },
-    { label: "Sivaganga", value: "sivaganga" },
-    { label: "Tenkasi", value: "tenkasi" },
-    { label: "Thanjavur", value: "thanjavur" },
-    { label: "Theni", value: "theni" },
-    { label: "Thoothukudi", value: "thoothukudi" },
-    { label: "Tiruchirappalli", value: "tiruchirappalli" },
-    { label: "Tirunelveli", value: "tirunelveli" },
-    { label: "Tirupathur", value: "tirupathur" },
-    { label: "Tiruppur", value: "tiruppur" },
-    { label: "Tiruvallur", value: "tiruvallur" },
-    { label: "Tiruvannamalai", value: "tiruvannamalai" },
-    { label: "Tiruvarur", value: "tiruvarur" },
-    { label: "Vellore", value: "vellore" },
-    { label: "Viluppuram", value: "viluppuram" },
-    { label: "Virudhunagar", value: "virudhunagar" },
-  ],
-  kerala: [
-    { label: "Alappuzha", value: "alappuzha" },
-    { label: "Ernakulam", value: "ernakulam" },
-    { label: "Idukki", value: "idukki" },
-    { label: "Kannur", value: "kannur" },
-    { label: "Kasaragod", value: "kasaragod" },
-    { label: "Kollam", value: "kollam" },
-    { label: "Kottayam", value: "kottayam" },
-    { label: "Kozhikode", value: "kozhikode" },
-    { label: "Malappuram", value: "malappuram" },
-    { label: "Palakkad", value: "palakkad" },
-    { label: "Pathanamthitta", value: "pathanamthitta" },
-    { label: "Thiruvananthapuram", value: "thiruvananthapuram" },
-    { label: "Thrissur", value: "thrissur" },
-    { label: "Wayanad", value: "wayanad" },
-  ],
-
-  uttarpradesh: [
-    { label: "Lucknow", value: "lucknow" },
-    { label: "Kanpur", value: "kanpur" },
-  ],
-};
-//to address overlapping issue with city and state dropdown
-const states = Object.keys(stateCityMapping).map((key) => ({
-  label: key.charAt(0).toUpperCase() + key.slice(1),
-  value: key,
-}));
-
-const customStyles = {
-  menu: (provided) => ({
-    ...provided,
-    zIndex: 9999, // Prevent overlap
-  }),
-};
 
 function AddFranchise() {
   const selectedUser = (state) => state.auth.user || "";
@@ -166,7 +54,7 @@ function AddFranchise() {
     initialValues: { ...initialFranchiseValues },
     validationSchema: validationFranchiseSchema,
     onSubmit: async () => {
-      setLoading(loading);
+      setLoading(true); // Prevent multiple submissions
       const {
         name,
         industry,
@@ -238,13 +126,14 @@ function AddFranchise() {
           resetState1();
           resetState2();
           resetState3();
-          setLoading(!loading);
           handleCancelClick();
         } else {
           toast.error(response.data.message);
         }
       } catch (error) {
         toast.error(error.message);
+      } finally {
+        setLoading(false); // Always reset loading
       }
     },
   });
@@ -254,7 +143,7 @@ function AddFranchise() {
     resetState2();
     resetState3();
     // closeAddPost();
-    navigate("/");
+    navigate("/user-profile");
   };
 
   // // Select state and city
@@ -895,7 +784,7 @@ function AddFranchise() {
                           )}
                       </div>
 
-                      {/* staff requrired */}
+                      {/* staff requried */}
                       <div className="relative z-0 w-full mb-5 group">
                         <label
                           htmlFor="staff"
@@ -1485,10 +1374,11 @@ function AddFranchise() {
                       </button> */}
                       <button
                         type="submit"
-                        className="flex items-center bg-yellow-300 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-400 mx-4"
+                        disabled={loading}
+                        className={`flex items-center bg-yellow-300 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-400 mx-4 ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
                       >
                         <HiCheck className="w-9 h-9 mr-2" />
-                        <span className="text-xl">Submit</span>
+                        <span className="text-xl">{loading ? "Submitting..." : "Submit"}</span>
                       </button>
                     </div>
                   </div>

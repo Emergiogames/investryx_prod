@@ -17,19 +17,32 @@ const initialValues = {
 
 const validationSchema = Yup.object({
   firstname: Yup.string()
+    .min(5, "Firstname must be at least 5 characters")
     .max(1000, "Firstname must be 1000 characters or less")
-    .matches(/^[A-Za-z]+$/, "Firstname should contain only English alphabets")
+    .matches(
+      /^[\p{L}\s'-]+$/u,
+      "Firstname should contain only letters, spaces, hyphens, or apostrophes"
+    )
     .required("Firstname is required"),
 
   lastname: Yup.string()
+    .min(5, "Lastname must be at least 5 characters")
     .max(1000, "Lastname must be 1000 characters or less")
-    .matches(/^[A-Za-z]+$/, "Lastname should contain only English alphabets")
+    .matches(
+      /^[\p{L}\s'-]+$/u,
+      "Lastname should contain only letters, spaces, hyphens, or apostrophes"
+    )
     .required("Lastname is required"),
 
   email: Yup.string()
+    .max(254, "Email must be 254 characters or less")
     .matches(
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      "Invalid email format. Must be in the format something@something.something"
+      // This regex ensures:
+      // - No special character at start/end
+      // - No two consecutive special characters
+      // - Valid email structure
+      /^(?![._%+-])([a-zA-Z0-9]+([._%+-]?[a-zA-Z0-9]+)*)@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/,
+      "Invalid email format. Email must not start/end with special characters or have consecutive special characters."
     )
     .required("Email is required"),
 
@@ -38,6 +51,7 @@ const validationSchema = Yup.object({
     .required("Phone number is required"),
 
   message: Yup.string()
+    .min(20, "Message must be at least 20 characters")
     .max(1000, "Message must be 1000 characters or less")
     .matches(
       /^[A-Za-z0-9\s]+$/,

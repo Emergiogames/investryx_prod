@@ -323,6 +323,8 @@ function ChatList() {
     //passing sendedByImg
     useEffect(() => {
         setSendedByImg(currentChat?.first_person?.image || null);
+        console.log("111", currentChat?.first_person?.image);
+        
     }, [currentChat]);
 
     return (
@@ -465,13 +467,13 @@ function ChatList() {
                                                 <div className="relative flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full overflow-hidden">
                                                     <img
                                                         className="h-full w-full object-cover rounded-full"
-                                                        src={data?.post?.image1 || "M"}
+                                                        src={data?.post?.image1 || "/images/no-image-icon.png"}
                                                         alt={data?.first_person?.first_name}
                                                     />
                                                     <div className="absolute bottom-0 right-0 w-5 h-5 border-2 border-white rounded-full overflow-hidden">
                                                         <img
                                                             className="h-full w-full object-cover rounded-full"
-                                                            src={data?.first_person?.image || "M"}
+                                                            src={data?.first_person?.image || "https://img.freepik.com/premium-vector/people-saving-money_24908-51569.jpg?w=740"}
                                                             alt={data?.first_person?.first_name}
                                                         />
                                                     </div>
@@ -550,10 +552,10 @@ function ChatList() {
 
                                     {/* Right Side Box with Inner Elements */}
                                     <div className="flex flex-col space-y-2 w-2/3">
-                                        <div className="w-full h-4 ">
+                                        {/* <div className="w-full h-4 ">
                                             {currentChat?.first_person?.first_name.slice(0, 10) || "Nil"}
-                                        </div>
-                                        <div className="w-1/2 h-4  rounded">{currentChat?.post?.name || "Nil"}</div>
+                                        </div> */}
+                                        <div className="w-1/2 m-3  rounded">{currentChat?.post?.name || "Nil"}</div>
                                     </div>
                                 </div>
                             </div>

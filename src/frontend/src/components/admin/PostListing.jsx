@@ -20,26 +20,10 @@ const PostListing = ({ currentData }) => {
         setPostStates(currentData);
     }, [currentData]);
 
-    //   const fetchPosts = () => {
-    //     setLoading(true);
-    //     adminBusinessList()
-    //       .then((response) => {
-    //         console.log("here is business");
 
-    //         const postData = response.data;
-    //         console.log("business details :", postData);
-    //         setPostStates(postData);
-    //       })
-    //       .catch((error) => {
-    //         console.log(error);
-    //         toast.error("Failed to fetch posts.");
-    //       })
-    //       .finally(() => {
-    //         setLoading(false);
-    //       });
-    //   };
-
-    console.log("this is business adat :", postStates);
+    console.log("this is business adat :", 
+        
+    );
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);

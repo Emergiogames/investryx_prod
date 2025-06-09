@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { formatDistanceToNow } from "date-fns";
 import { leftPlan } from "../../services/user/apiMethods";
 import { FaRegImages } from "react-icons/fa6";
+import { HiChevronLeft } from "react-icons/hi";
 
 function ViewPostBus() {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -96,19 +97,30 @@ function ViewPostBus() {
                 } else {
                     setPlanStatus(false);
                 }
-                setLoader(false);
             } catch (error) {
                 console.error("Error happened in subscription check:", error);
+            } finally {
+                setLoader(false);
             }
         };
 
         checkPlan();
     }, []);
 
+    const handleClose = () => {
+        navigate(-1);
+    };
+
     return (
         <>
             <div className="flex justify-center items-center">
-                <div className="mt-20 rounded-3xl w-[90%] min-h-screen ">
+                <div className=" rounded-3xl w-[90%] min-h-screen ">
+                    <div className="flex items-center p-4">
+                        <button onClick={handleClose} className="px-2 py-2 rounded">
+                            <HiChevronLeft className="w-10 h-10 text-yellow-400 dark:text-white" />
+                        </button>
+                        <span className="font-semibold">BACK</span>
+                    </div>
                     <div className="lg:flex">
                         {/* box left  */}
                         <div className="lg:w-1/2 min-h-[30rem] lg:p-8 lg:m-7  bg-amber-100 rounded-2xl shadow-xl">
@@ -155,7 +167,7 @@ function ViewPostBus() {
                                     <div>
                                         Location :{postState ? postState : "N/A"}, {postCity ? postCity : "N/A"}
                                     </div>
-                                    <div>Price : {postOffering ? postOffering : "N/A"}</div>
+                                    <div>Asking Price : {postOffering ? `${postOffering} ₹` : "N/A"}</div>
                                 </div>
                                 <div className="text-2xl  font-bold  my-4">{postSingDes}</div>
                             </div>
@@ -247,7 +259,7 @@ function ViewPostBus() {
                                                     <td className="py-2">{postRate ? postRate : "N/A"}</td>
                                                 </tr>
                                                 <tr className="border-b">
-                                                    <td className="py-2 font-semibold">Inrested in</td>
+                                                    <td className="py-2 font-semibold">Interested in</td>
                                                     <td className="py-2">{postSaleType ? postSaleType : "N/A"}</td>
                                                 </tr>
                                             </tbody>
@@ -300,7 +312,7 @@ function ViewPostBus() {
                     </div>
                     {/* box bottom */}
                     <div className=" bg-amber-100  min-h-[19rem]  p-8 m-7 rounded-2xl shadow-xl">
-                        <div className="text-center text-violet-900 text-2xl font-bold p-3 m-4">Detailed Informtion</div>
+                        <div className="text-center text-violet-900 text-2xl font-bold p-3 m-4">Detailed Information</div>
                         <div className="text-xl font-semibold p-2 m-2">Reason for Selling :</div>
                         <div className="p-2 m-1 mx-6">{postDescription ? postDescription : "N/A"}</div>
                         <div className="text-xl font-semibold p-2 m-2">Top-selling Products :</div>

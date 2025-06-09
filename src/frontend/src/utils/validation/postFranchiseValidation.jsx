@@ -39,11 +39,76 @@ export const initialFranchiseValues = {
 // Validation schema
 export const validationFranchiseSchema = Yup.object({
   name: Yup.string()
-    .trim() // Trim leading and trailing spaces
+    .trim()
+    .min(4, "Name must be at least 4 characters")
+    .max(200, "Name must be at most 200 characters")
     .required("Name is required")
     .matches(/^\S+.*\S$/, "Name cannot contain only spaces"),
-//   industry: Yup.string()
-//     .trim()
-//     .required("Industry is required")
-//     .matches(/^\S+.*\S$/, "Industry cannot contain only spaces"),
+  url: Yup.string()
+  .trim()
+  .matches(
+    /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/,
+    "Enter a valid website URL (e.g., https://example.com)"
+  ),
+  initial: Yup.number()
+    .typeError("Initial must be a number")
+    .positive("Initial must be a positive number"),
+  proj_ROI: Yup.number()
+    .typeError("Projected ROI must be a number")
+    .positive("Projected ROI must be a positive number"),
+  total_outlets: Yup.number()
+    .typeError("Total outlets must be a number")
+    .positive("Total outlets must be a positive number"),
+  yr_period: Yup.number()
+    .typeError("Year period must be a number")
+    .positive("Year period must be a positive number"),
+  min_space: Yup.number()
+    .typeError("Minimum space must be a number")
+    .positive("Minimum space must be a positive number"),
+  max_space: Yup.number()
+    .typeError("Maximum space must be a number")
+    .positive("Maximum space must be a positive number")
+    .test(
+      "is-greater",
+      "Maximum space must be greater than minimum space",
+      function (value) {
+        const { min_space } = this.parent;
+        // Only validate if both values are present and not empty
+        if (value && min_space) {
+          return value > min_space;
+        }
+        return true;
+      }
+    ),
+  range_starting: Yup.number()
+    .typeError("Range starting must be a number")
+    .positive("Range starting must be a positive number"),
+  range_ending: Yup.number()
+    .typeError("Range ending must be a number")
+    .positive("Range ending must be a positive number")
+    .test(
+      "is-greater",
+      "Range ending must be greater than range starting",
+      function (value) {
+        const { range_starting } = this.parent;
+        // Only validate if both values are present and not empty
+        if (value && range_starting) {
+          return value > range_starting;
+        }
+        return true;
+      }
+    ),
+  brand_fee: Yup.number()
+    .typeError("Brand fee must be a number")
+    .positive("Brand fee must be a positive number"),
+  staff: Yup.number()
+    .typeError("Staff must be a number")
+    .positive("Staff must be a positive number"),
+  avg_monthly_sales: Yup.number()
+    .typeError("Average monthly sales must be a number")
+    .positive("Average monthly sales must be a positive number"),
+  ebitda: Yup.number()
+    .typeError("EBITDA must be a number")
+    .min(0, "EBITDA must be at least 0")
+    .max(100, "EBITDA cannot be more than 100"),
 });

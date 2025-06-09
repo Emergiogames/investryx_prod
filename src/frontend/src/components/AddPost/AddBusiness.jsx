@@ -74,93 +74,94 @@ function AddBusiness() {
         initialValues: { ...initialValues },
         validationSchema: validationSchema,
         onSubmit: async () => {
-            setLoading(loading);
-            const {
-                name,
-                industry,
-                establish_yr,
-                single_desc,
-                description,
-                address_1,
-                address_2,
-                state,
-                pin,
-                city,
-                employees,
-                entity,
-                avg_monthly,
-                latest_yearly,
-                ebitda,
-                rate,
-                type_sale,
-                url,
-                top_selling,
-                features,
-                facility,
-                reason,
-                income_source,
-                asking_price,
-            } = formik.values;
-
-            const formData = new FormData();
-
-            //for city
-
-            // For images
-            selectedFiles1?.forEach((file, index) => {
-                formData.append(`image${index + 1}`, file);
-            });
-
-            // For documents
-            selectedFiles2?.forEach((file, index) => {
-                formData.append(`doc${index + 1}`, file);
-            });
-
-            // For proofs
-            selectedFiles3?.forEach((file, index) => {
-                formData.append(`proof${index + 1}`, file);
-            });
-            formData.append("name", name);
-            formData.append("industry", industry);
-            formData.append("establish_yr", establish_yr);
-            formData.append("single_desc", single_desc);
-            formData.append("description", description);
-            formData.append("address_1", address_1);
-            formData.append("address_2", address_2);
-            formData.append("state", state);
-            formData.append("pin", pin);
-            formData.append("city", city);
-            formData.append("employees", employees);
-            formData.append("entity", entity);
-            formData.append("avg_monthly", avg_monthly);
-            formData.append("latest_yearly", latest_yearly);
-            formData.append("ebitda", ebitda);
-            formData.append("rate", rate);
-            formData.append("type_sale", type_sale);
-            formData.append("url", url);
-            formData.append("top_selling", top_selling);
-            formData.append("features", features);
-            formData.append("facility", facility);
-            formData.append("reason", reason);
-            formData.append("income_source", income_source);
-            formData.append("userId", userId);
-            formData.append("single_desc", single_desc);
-            formData.append("asking_price", asking_price);
-
+            setLoading(true); // Set loading to true at the start
             try {
+                const {
+                    name,
+                    industry,
+                    establish_yr,
+                    single_desc,
+                    description,
+                    address_1,
+                    address_2,
+                    state,
+                    pin,
+                    city,
+                    employees,
+                    entity,
+                    avg_monthly,
+                    latest_yearly,
+                    ebitda,
+                    rate,
+                    type_sale,
+                    url,
+                    top_selling,
+                    features,
+                    facility,
+                    reason,
+                    income_source,
+                    asking_price,
+                } = formik.values;
+
+                const formData = new FormData();
+
+                //for city
+
+                // For images
+                selectedFiles1?.forEach((file, index) => {
+                    formData.append(`image${index + 1}`, file);
+                });
+
+                // For documents
+                selectedFiles2?.forEach((file, index) => {
+                    formData.append(`doc${index + 1}`, file);
+                });
+
+                // For proofs
+                selectedFiles3?.forEach((file, index) => {
+                    formData.append(`proof${index + 1}`, file);
+                });
+                formData.append("name", name);
+                formData.append("industry", industry);
+                formData.append("establish_yr", establish_yr);
+                formData.append("single_desc", single_desc);
+                formData.append("description", description);
+                formData.append("address_1", address_1);
+                formData.append("address_2", address_2);
+                formData.append("state", state);
+                formData.append("pin", pin);
+                formData.append("city", city);
+                formData.append("employees", employees);
+                formData.append("entity", entity);
+                formData.append("avg_monthly", avg_monthly);
+                formData.append("latest_yearly", latest_yearly);
+                formData.append("ebitda", ebitda);
+                formData.append("rate", rate);
+                formData.append("type_sale", type_sale);
+                formData.append("url", url);
+                formData.append("top_selling", top_selling);
+                formData.append("features", features);
+                formData.append("facility", facility);
+                formData.append("reason", reason);
+                formData.append("income_source", income_source);
+                formData.append("userId", userId);
+                formData.append("single_desc", single_desc);
+                formData.append("asking_price", asking_price);
+
                 const response = await addBusinessPost(formData);
                 if (response.data.status === true) {
                     toast.success("Post Added Successfull");
                     resetState1();
                     resetState2();
                     resetState3();
-                    setLoading(!loading);
                     handleCancelClick();
                 } else {
                     toast.error(response.data.message);
                 }
             } catch (error) {
                 toast.error(error.message);
+            } finally {
+                setLoading(false); 
             }
         },
     });
@@ -170,7 +171,7 @@ function AddBusiness() {
         resetState2();
         resetState3();
         // closeAddPost();
-        navigate("/");
+        navigate("/user-profile");
     };
 
     // Select state and city
@@ -665,15 +666,15 @@ function AddBusiness() {
                                                     className="block py-2 px-3 w-full text-sm text-gray-900 bg-amber-50 border-2 border-gray-300 rounded-md dark:text-white dark:bg-gray-800 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                                                 >
                                                     <option value="" disabled>
-                                                        Select Industry
+                                                        Select Entity Type
                                                     </option>
-                                                    <option value="Education">Education</option>
-                                                    <option value="IT">IT</option>
-                                                    <option value="HealthCare">HealthCare</option>
-                                                    <option value="Fashion">Fashion</option>
-                                                    <option value="Food">Food</option>
-                                                    <option value="Automobile">Automobile</option>
-                                                    <option value="Banking">Banking</option>
+                                                    <option value="Proprietorship">Proprietorship</option>
+                                                    <option value="Public Limited Company">Public Limited Company</option>
+                                                    <option value="Private Limited Company">Private Limited Company</option>
+                                                    <option value="Limited Liability">Limited Liability</option>
+                                                    <option value="Partnership Limited Liability Company">Partnership Limited Liability Company</option>
+                                                    <option value="C Corporation">C Corporation</option>
+                                                    <option value="S Corporation">S Corporation</option>
                                                     <option value="Others">Others</option>
                                                 </select>
 
@@ -1168,6 +1169,22 @@ function AddBusiness() {
                                                                             className="w-16 h-16"
                                                                         />
                                                                     )}
+                                                                    {selectedFiles2[selectedPreviewIndexTwo]?.type ===
+                                                                        "application/msword" && (
+                                                                        <img
+                                                                            src="https://img.icons8.com/?size=100&id=13417&format=png&color=000000"
+                                                                            alt="Word"
+                                                                            className="w-16 h-16"
+                                                                        />
+                                                                    )}
+                                                                    {selectedFiles2[selectedPreviewIndexTwo]?.type ===
+                                                                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" && (
+                                                                        <img
+                                                                            src="https://img.icons8.com/?size=100&id=13417&format=png&color=000000"
+                                                                            alt="Word"
+                                                                            className="w-16 h-16"
+                                                                        />
+                                                                    )}
                                                                     <p className="text-xs mt-2">
                                                                         {selectedFiles2[selectedPreviewIndexTwo]?.name}
                                                                     </p>
@@ -1319,6 +1336,22 @@ function AddBusiness() {
                                                                             className="w-16 h-16"
                                                                         />
                                                                     )}
+                                                                    {selectedFiles3[selectedPreviewIndexThree]?.type ===
+                                                                        "application/msword" && (
+                                                                        <img
+                                                                            src="https://img.icons8.com/?size=100&id=13417&format=png&color=000000"
+                                                                            alt="Word"
+                                                                            className="w-16 h-16"
+                                                                        />
+                                                                    )}
+                                                                    {selectedFiles3[selectedPreviewIndexThree]?.type ===
+                                                                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" && (
+                                                                        <img
+                                                                            src="https://img.icons8.com/?size=100&id=13417&format=png&color=000000"
+                                                                            alt="Word"
+                                                                            className="w-16 h-16"
+                                                                        />
+                                                                    )}
                                                                     <p className="text-xs mt-2">
                                                                         {selectedFiles3[selectedPreviewIndexThree]?.name}
                                                                     </p>
@@ -1418,10 +1451,11 @@ function AddBusiness() {
                       </button> */}
                                             <button
                                                 type="submit"
-                                                className="flex items-center bg-yellow-300 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-400 mx-4"
+                                                disabled={loading}
+                                                className={`flex items-center bg-yellow-300 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-400 mx-4 ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
                                             >
                                                 <HiCheck className="w-9 h-9 mr-2" />
-                                                <span className="text-xl">Submit</span>
+                                                <span className="text-xl">{loading ? "Submitting..." : "Submit"}</span>
                                             </button>
                                         </div>
                                     </div>
