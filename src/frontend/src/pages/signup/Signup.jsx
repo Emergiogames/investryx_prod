@@ -16,7 +16,9 @@ function Signup() {
     const navigate = useNavigate();
  
 
-    const savedData = JSON.parse(sessionStorage.getItem("signupData")) || {
+    const savedData =
+    //  JSON.parse(sessionStorage.getItem("signupData")) || 
+     {
         name: "",
         email: "",
         phone: "",

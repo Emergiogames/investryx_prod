@@ -49,7 +49,6 @@ function AddInvestor() {
         value: key,
     }));
 
-    console.log("444 ::", states);
 
     const handleClose = () => {
         if (location.state?.from) {
@@ -76,7 +75,7 @@ function AddInvestor() {
         initialValues: { ...initialInvestorValues },
         validationSchema: validationInvestorSchema,
         onSubmit: async () => {
-            setLoading(loading);
+            setLoading(true); // Prevent multiple submissions
             const {
                 name,
                 industry,
@@ -94,20 +93,12 @@ function AddInvestor() {
             } = formik.values;
 
             const formData = new FormData();
-
-            //for city
-
-            // For images
             selectedFiles1?.forEach((file, index) => {
                 formData.append(`image${index + 1}`, file);
             });
-
-            // For documents
             selectedFiles2?.forEach((file, index) => {
                 formData.append(`doc${index + 1}`, file);
             });
-
-            // For proofs
             selectedFiles3?.forEach((file, index) => {
                 formData.append(`proof${index + 1}`, file);
             });
@@ -133,13 +124,14 @@ function AddInvestor() {
                     resetState1();
                     resetState2();
                     resetState3();
-                    setLoading(!loading);
                     handleCancelClick();
                 } else {
                     toast.error(response.data.message);
                 }
             } catch (error) {
                 toast.error(error.message);
+            } finally {
+                setLoading(false); // Always reset loading
             }
         },
     });
@@ -1126,10 +1118,11 @@ function AddInvestor() {
                                             </button> */}
                                             <button
                                                 type="submit"
-                                                className="flex items-center bg-yellow-300 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-400 mx-4"
+                                                disabled={loading}
+                                                className={`flex items-center bg-yellow-300 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-400 mx-4 ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
                                             >
                                                 <HiCheck className="w-9 h-9 mr-2" />
-                                                <span className="text-xl">Submit</span>
+                                                <span className="text-xl">{loading ? "Submitting..." : "Submit"}</span>
                                             </button>
                                         </div>
                                     </div>

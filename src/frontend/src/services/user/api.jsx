@@ -1,5 +1,8 @@
 import axios from "axios";
 import { store } from "../../utils/context/store";
+import { logout } from "../../utils/context/reducers/authSlice";
+import { toast } from "react-toastify";
+
 const BASE_URL_MAIN = import.meta.env.VITE_BASE_URL_MAIN || "";
 
 export const api = axios.create({
@@ -8,30 +11,40 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(
-    //intersptor used to add addional functionalaity
     async (config) => {
         const state = store.getState();
         const authToken = state.auth.token;
-
-        // config.headers["Authorization"] = `Bearer ${authToken}`
         config.headers["token"] = authToken;
         return config;
     },
-    async (error) => {
+    (error) => {
         return Promise.reject(error);
     }
 );
 
+// Show toast on network status change
+let hasShownOfflineToast = false;
+
+window.addEventListener("offline", () => {
+    if (!hasShownOfflineToast) {
+        toast.error("No internet connection. Please check your network.");
+        hasShownOfflineToast = true;
+    }
+});
+
+window.addEventListener("online", () => {
+    toast.success("You are back online!");
+    hasShownOfflineToast = false;
+});
+
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response) {
-            console.error("Response error:", error.response.data);
-            console.error("Status:", error.response.status);
-        } else if (error.request) {
-            console.error("Request error:", error.request);
-        } else {
-            console.error("Error:", error.message);
+        const res = error.response;
+        if (res && res.status === 400 && res.data.status === false) {
+            toast.info("Your account has been blocked. Please contact the Investryx team.");
+            store.dispatch(logout());
+            window.location.href = "/login";
         }
         return Promise.reject(error);
     }

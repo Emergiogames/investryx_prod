@@ -16,23 +16,29 @@ function Otp() {
     const phone = queryParams.get("phone") || "";
     const email = queryParams.get("email") || "";
 
-    const [timer, setTimer] = useState(30);
+    const initialTimer = parseInt(localStorage.getItem("otpTimer") || "30");
+    const [timer, setTimer] = useState(initialTimer);
     const [resend, setResend] = useState(false);
-    const timerRef = useRef();
 
+    //main resend logic on register-normal-resend
     useEffect(() => {
-        if (timer > 0) {
-            timerRef.current = setTimeout(() => setTimer(timer - 1), 1000);
-        } else {
-            setResend(true);
-            if (timer === 0) toast.error("Timer expired, please resend OTP");
-        }
-        return () => clearTimeout(timerRef.current);
+        const countdownInterval = setInterval(() => {
+            if (timer > 0) {
+                setTimer(timer - 1);
+                localStorage.setItem("otpTimer", (timer - 1).toString);
+            } else {
+                clearInterval(countdownInterval);
+                setResend(true);
+                toast.error("Timer expired please resend OTP");
+            }
+        }, 1000);
+        return () => clearInterval(countdownInterval);
     }, [timer]);
 
     const startResendTimer = () => {
         setResend(false);
         setTimer(30);
+        localStorage.setItem("otpTimer", "30");
     };
 
     const handleResendOTP = () => {

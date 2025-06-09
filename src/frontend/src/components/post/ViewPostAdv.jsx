@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import Button from "@mui/material/Button";
 import { leftPlan } from "../../services/user/apiMethods";
 import { formatDistanceToNow } from "date-fns";
+import { HiChevronLeft } from "react-icons/hi";
+
 
 function ViewPostAdv() {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -16,12 +18,9 @@ function ViewPostAdv() {
 
     const location = useLocation();
     const post = location.state?.post;
-    console.log("11 ::", post);
 
     const selectedUserId = (state) => state?.auth?.user?.id || null;
     const userId = useSelector(selectedUserId);
-    console.log("22 ::", userId);
-    
 
     const navigate = useNavigate();
 
@@ -73,19 +72,30 @@ function ViewPostAdv() {
                 } else {
                     setPlanStatus(false);
                 }
-                setLoader(false);
             } catch (error) {
                 console.error("Error happened in subscription check:", error);
+            } finally {
+                setLoader(false);
             }
         };
 
         checkPlan();
     }, [post]);
 
+    const handleClose = () => {
+        navigate(-1);
+    };
+
     return (
         <>
             <div className="flex justify-center items-center">
-                <div className="mt-20 rounded-3xl w-[90%] min-h-screen ">
+                <div className="rounded-3xl w-[90%] min-h-screen ">
+                    <div className="flex items-center p-4">
+                        <button onClick={handleClose} className="px-2 py-2 rounded">
+                            <HiChevronLeft className="w-10 h-10 text-yellow-400 dark:text-white" />
+                        </button>
+                        <span className="font-semibold">BACK</span>
+                    </div>
                     <div className="lg:flex">
                         {/* box left  */}
                         <div className="lg:w-1/2 min-h-[30rem] lg:p-8 lg:m-7  bg-amber-100 rounded-2xl shadow-xl">

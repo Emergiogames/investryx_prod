@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { editUser } from "../../services/user/apiMethods";
+import { editUser, getUserProfile } from "../../services/user/apiMethods";
 import { toast } from "react-toastify";
 import { Button } from "@material-tailwind/react";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../utils/context/reducers/authSlice";
+
+
 
 function MorePopUp({ isopen, onClose, deleteHandler, props }) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [showConfirmUpdate, setShowConfirmUpdate] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [userData, setUserData] = useState(props);
+    const [userData, setUserDataLocal] = useState(props);
+    const [originalData] = useState(props); // Store original data for comparison
     const [imagePreview, setImagePreview] = useState("");
 
     if (!isopen) return null; // Prevent rendering when closed
@@ -17,34 +23,75 @@ function MorePopUp({ isopen, onClose, deleteHandler, props }) {
     const handleEdit = () => setIsEditing(true);
     const handleCancelEdit = () => setIsEditing(false);
     const handleChange = (e) => {
-        setUserData({ ...userData, [e.target.name]: e.target.value });
+        setUserDataLocal({ ...userData, [e.target.name]: e.target.value });
     };
     const handleImgChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const previewUrl = URL.createObjectURL(file);
             setImagePreview(previewUrl);
-            setUserData((prev) => ({ ...prev, image: previewUrl }));
+            setUserDataLocal((prev) => ({ ...prev, image: file })); // Pass the file (binary) for upload
         }
     };
 
     const handleUpdate = () => setShowConfirmUpdate(true);
+    // PATCH: Only send changed fields
     const confirmUpdate = () => {
         try {
-            editUser(userData)
+            let patchData;
+            let hasChanges = false;
+
+            // If image is a File, always send it
+            if (userData.image instanceof File) {
+                patchData = new FormData();
+                patchData.append("image", userData.image);
+                hasChanges = true;
+            } else {
+                patchData = {};
+            }
+
+            // Compare other fields
+            ["first_name", "username", "email"].forEach((key) => {
+                if (userData[key] !== originalData[key]) {
+                    if (patchData instanceof FormData) {
+                        patchData.append(key, userData[key]);
+                    } else {
+                        patchData[key] = userData[key];
+                    }
+                    hasChanges = true;
+                }
+            });
+
+            if (!hasChanges) {
+                toast.info("No changes to update.");
+                setShowConfirmUpdate(false);
+                setIsEditing(false);
+                return;
+            }
+
+            editUser(patchData)
                 .then((response) => {
-                    if (response.status === 200) {
+                    if (response.data.status === true) {
                         toast.success("Profile updated successfully");
+                        // No need to pass token, just call getUserProfile
+                        return getUserProfile();
+                    }
+                    throw new Error("Update failed");
+                })
+                .then((profileResponse) => {
+                    console.log('222 :::', profileResponse);
+                    
+                    if (profileResponse && profileResponse.data) {
+                        dispatch(setUserData(profileResponse?.data));
                     }
                 })
                 .catch((err) => {
-                    toast.error("error occured :", err);
+                    toast.error("Error occurred: " + err);
                 });
-        } catch (error) {
-            console.error("error occured :", error);
-        }
 
-        // updateUserData(userData);
+        } catch (error) {
+            console.error("Error occurred:", error);
+        }
         setShowConfirmUpdate(false);
         setIsEditing(false);
     };
@@ -71,8 +118,8 @@ function MorePopUp({ isopen, onClose, deleteHandler, props }) {
                                     <label htmlFor="image">
                                         <img
                                             src={
-                                                userData?.image ||
                                                 imagePreview ||
+                                                (typeof userData.image === "string" && userData.image) ||
                                                 "https://img.freepik.com/premium-vector/people-saving-money_24908-51569.jpg?w=740"
                                             }
                                             alt="User"
@@ -119,8 +166,8 @@ function MorePopUp({ isopen, onClose, deleteHandler, props }) {
                                     <label htmlFor="image">
                                         <img
                                             src={
-                                                userData?.image ||
                                                 imagePreview ||
+                                                (typeof userData.image === "string" && userData.image) ||
                                                 "https://img.freepik.com/premium-vector/people-saving-money_24908-51569.jpg?w=740"
                                             }
                                             alt="User"

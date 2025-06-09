@@ -180,7 +180,7 @@ export default function CalculatorForm() {
                                     <label
                                         htmlFor="value_criteria"
                                         className={`absolute duration-300 top-3 left-5 text-gray-500 ${
-                                            formData.money && "scale-75 -translate-y-6"
+                                            formData.money && "scale-75 -translate-y-8"
                                         }`}
                                     >
                                         {/* Valuation Criteria */}
@@ -189,7 +189,7 @@ export default function CalculatorForm() {
                                         name="value_criteria"
                                         value={formData.value_criteria}
                                         onChange={handleChange}
-                                        className="block w-full bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                        className="block w-full bg-transparent border-0 border-b-2  border-gray-200"
                                         required
                                     >
                                         {criteria.map((value, index) => (
@@ -222,13 +222,13 @@ export default function CalculatorForm() {
                                             placeholder=" "
                                             value={formData.revenue_metrics}
                                             onChange={handleChange}
-                                            className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                            className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2  border-gray-200"
                                         />
                                         <div className="absolute top-0 left-0 mt-3 ml-1 text-gray-400">$</div>
                                         <label
                                             htmlFor="money"
                                             className={`absolute duration-300 top-3 left-5 text-gray-500 ${
-                                                formData.revenue_metrics && "scale-75 -translate-y-6"
+                                                formData.revenue_metrics && "scale-75 -translate-y-8"
                                             }`}
                                         >
                                             Enter Annual Company Revenue
@@ -242,13 +242,14 @@ export default function CalculatorForm() {
                                             placeholder=" "
                                             value={formData.net_income}
                                             onChange={handleChange}
-                                            className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                            className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 border-gray-200
+                                            focus:outline-none"
                                         />
                                         <div className="absolute top-0 left-0 mt-3 ml-1 text-gray-400">$</div>
                                         <label
                                             htmlFor="money"
                                             className={`absolute duration-300 top-3 left-5 text-gray-500 ${
-                                                formData.net_income && "scale-75 -translate-y-6"
+                                                formData.net_income && "scale-75 -translate-y-8"
                                             }`}
                                         >
                                             Enter Net income
@@ -262,13 +263,13 @@ export default function CalculatorForm() {
                                             placeholder=" "
                                             value={formData.ebitda}
                                             onChange={handleChange}
-                                            className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                            className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 border-gray-200"
                                         />
                                         <div className="absolute top-0 left-0 mt-3 ml-1 text-gray-400">$</div>
                                         <label
                                             htmlFor="money"
                                             className={`absolute duration-300 top-3 left-5 text-gray-500 ${
-                                                formData.ebitda && "scale-75 -translate-y-6"
+                                                formData.ebitda && "scale-75 -translate-y-8"
                                             }`}
                                         >
                                             Enter EBITDA
@@ -289,13 +290,13 @@ export default function CalculatorForm() {
                                         placeholder=" "
                                         value={formData.enterprice_value}
                                         onChange={handleChange}
-                                        className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                        className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2  border-gray-200"
                                     />
                                     <div className="absolute top-0 left-0 mt-3 ml-1 text-gray-400">$</div>
                                     <label
                                         htmlFor="money"
                                         className={`absolute duration-300 top-3 left-5 text-gray-500 ${
-                                            formData.enterprice_value && "scale-75 -translate-y-6"
+                                            formData.enterprice_value && "scale-75 -translate-y-8"
                                         }`}
                                     >
                                         Enterprise value
@@ -315,7 +316,7 @@ export default function CalculatorForm() {
                                                 value="Revenue"
                                                 checked={formData.multiple_metric === "Revenue"}
                                                 onChange={handleChange}
-                                                className="mr-2 text-black border-2 border-gray-300 focus:border-gray-300 focus:ring-black"
+                                                className="mr-2 text-black border-2 border-gray-300 focus:border-gray-300 "
                                             />
                                             Revenue
                                         </label>
@@ -326,7 +327,7 @@ export default function CalculatorForm() {
                                                 value="EBITDA"
                                                 checked={formData.multiple_metric === "EBITDA"}
                                                 onChange={handleChange}
-                                                className="mr-2 text-black border-2 border-gray-300 focus:border-gray-300 focus:ring-black"
+                                                className="mr-2 text-black border-2 border-gray-300 focus:border-gray-300 "
                                             />
                                             EBITDA
                                         </label>
@@ -342,13 +343,13 @@ export default function CalculatorForm() {
                                             placeholder=" "
                                             value={formData.revenue_comparable}
                                             onChange={handleChange}
-                                            className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                            className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2  border-gray-200"
                                         />
                                         <div className="absolute top-0 left-0 mt-3 ml-1 text-gray-400">$</div>
                                         <label
                                             htmlFor="revenue_comparable"
                                             className={`absolute duration-300 top-3 left-5 text-gray-500 ${
-                                                formData.revenue_comparable && "scale-75 -translate-y-6"
+                                                formData.revenue_comparable && "scale-75 -translate-y-8"
                                             }`}
                                         >
                                             Enter Revenue Value
@@ -362,13 +363,13 @@ export default function CalculatorForm() {
                                             placeholder=" "
                                             value={formData.ebitda_comparable}
                                             onChange={handleChange}
-                                            className="pt-3 pb-2 pr-12 block w-full px-0 bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                            className="pt-3 pb-2 pr-12 block w-full px-0 bg-transparent border-0 border-b-2  border-gray-200"
                                         />
                                         <div className="absolute top-0 right-0 mt-3 mr-4 text-gray-400">%</div>
                                         <label
                                             htmlFor="ebitda_comparable"
                                             className={`absolute duration-300 top-3 text-gray-500 ${
-                                                formData.ebitda_comparable && "scale-75 -translate-y-6"
+                                                formData.ebitda_comparable && "scale-75 -translate-y-8"
                                             }`}
                                         >
                                             EBIDTA
@@ -468,7 +469,7 @@ export default function CalculatorForm() {
                                     <select
                                         name="currency"
                                         onChange={handleROI}
-                                        className="block w-full bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                        className="block w-full bg-transparent border-0 border-b-2  border-gray-200"
                                         required
                                     >
                                         {currencyROI.map((value) => (
@@ -486,12 +487,12 @@ export default function CalculatorForm() {
                                         name="timeperiod"
                                         placeholder=" "
                                         onChange={handleROI}
-                                        className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                        className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2  border-gray-200"
                                     />
                                     <label
                                         htmlFor="timeperiod"
                                         className={`absolute duration-300 top-3 left-5 text-gray-500 ${
-                                            roiData.timeperiod && "scale-75 -translate-y-6"
+                                            roiData.timeperiod && "scale-75 -translate-y-8"
                                         }`}
                                     >
                                         Select Time Period (in years)
@@ -506,12 +507,12 @@ export default function CalculatorForm() {
                                         placeholder=" "
                                         // value={roiData.initialInv}
                                         onChange={handleROI}
-                                        className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                        className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2  border-gray-200"
                                     />
                                     <label
                                         htmlFor="initialInv"
                                         className={`absolute duration-300 top-3 left-5 text-gray-500 ${
-                                            roiData.initialInv && "scale-75 -translate-y-6"
+                                            roiData.initialInv && "scale-75 -translate-y-8"
                                         }`}
                                     >
                                         Initial Investment
@@ -526,12 +527,12 @@ export default function CalculatorForm() {
                                         placeholder=" "
                                         // value={roiData.annualRev}
                                         onChange={handleROI}
-                                        className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                        className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2  border-gray-200"
                                     />
                                     <label
                                         htmlFor="annualRev"
                                         className={`absolute duration-300 top-3 left-5 text-gray-500 ${
-                                            roiData.annualRev && "scale-75 -translate-y-6"
+                                            roiData.annualRev && "scale-75 -translate-y-8"
                                         }`}
                                     >
                                         Projected Annual Revenue
@@ -544,12 +545,12 @@ export default function CalculatorForm() {
                                         placeholder=" "
                                         // value={roiData.annualOpe}
                                         onChange={handleROI}
-                                        className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2 focus:border-black border-gray-200"
+                                        className="pt-3 pb-2 pl-5 block w-full px-0 bg-transparent border-0 border-b-2  border-gray-200"
                                     />
                                     <label
                                         htmlFor="annualOpe"
                                         className={`absolute duration-300 top-3 left-5 text-gray-500 ${
-                                            roiData.annualOpe && "scale-75 -translate-y-6"
+                                            roiData.annualOpe && "scale-75 -translate-y-8"
                                         }`}
                                     >
                                         Annual Operating Costs

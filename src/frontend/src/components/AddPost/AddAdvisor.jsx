@@ -64,8 +64,7 @@ function AddAdvisor() {
         },
         validationSchema: validationAdvisorSchema,
         onSubmit: async (values) => {
-            // Set loading to true at start of submission
-            setLoading(true);
+            setLoading(true); // Prevent multiple submissions
 
             const { name, designation, number, email, logo, industry, interest, state, city, company, experience } = values;
 
@@ -390,7 +389,7 @@ function AddAdvisor() {
                                                     Years Of Experience
                                                 </label>
                                                 <input
-                                                    type="text"
+                                                    type="number"
                                                     value={formik.values.experience}
                                                     onChange={formik.handleChange}
                                                     onBlur={formik.handleBlur}
@@ -536,10 +535,11 @@ function AddAdvisor() {
                                             </button> */}
                                             <button
                                                 type="submit"
-                                                className="flex items-center bg-yellow-300 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-400 mx-4"
+                                                disabled={loading}
+                                                className={`flex items-center bg-yellow-300 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-400 mx-4 ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
                                             >
                                                 <HiCheck className="w-9 h-9 mr-2" />
-                                                <span className="text-xl">Submit</span>
+                                                <span className="text-xl">{loading ? "Submitting..." : "Submit"}</span>
                                             </button>
                                         </div>
                                     </div>

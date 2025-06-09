@@ -52,7 +52,6 @@ function Saved() {
                 }, 500);
             });
     };
-    console.log("whislist444 ::", posts);
 
     const handleDelete = (postId, entityType) => {
         console.log("handle delete posId :", postId, entityType);
@@ -316,7 +315,14 @@ function Saved() {
                                                 {post.name}
                                             </h4>
 
-                                            {post.image1 ? (
+                                            {post.logo ? (
+                                                <img
+                                                    onClick={() => handleViewPosts(post)}
+                                                    src={`${BASE_URL}${post.logo}` }
+                                                    alt=""
+                                                    className="w-full h-40 object-cover rounded-md pb-5 mb-4 relative top-5"
+                                                />
+                                            ) : post.image1 ? (
                                                 <img
                                                     onClick={() => handleViewPosts(post)}
                                                     src={`${BASE_URL}${post.image1}`}
@@ -325,10 +331,9 @@ function Saved() {
                                                 />
                                             ) : (
                                                 <div className="relative w-full " style={{ aspectRatio: "16 / 9" }}>
-                                                    <FaRegImages  onClick={() => handleViewPosts(post)} className="w-full h-full rounded-lg text-gray-500 bg-white p-4 pb-5 mb-4" />
+                                                    <FaRegImages  onClick={() => handleViewPosts(post)} className="w-full h-full rounded-lg text-gray-500 bg-white p-4" />
                                                 </div>
                                             )}
-
                                             <div className="flex flex-col justify-between leading-normal">
                                                 <p className="text-gray-500">
                                                     Industry: {post.industry}, City: {post.city}

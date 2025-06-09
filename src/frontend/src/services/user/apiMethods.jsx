@@ -232,6 +232,22 @@ export const getBusinessPosts = (profile) => {
     });
 };
 
+export const deleteBusinessPosts = (postId) => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("delete", `${postUrls.addBusinessPost}${postId}`, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
 export const getBusinessBanner = (profile) => {
     return new Promise((resolve, reject) => {
         try {
@@ -304,6 +320,22 @@ export const getInvestorPosts = (user_id) => {
     return new Promise((resolve, reject) => {
         try {
             apiCall("get", postUrls.getInvestorData, user_id)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const deleteInvestroPosts = (postId) => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("delete", `${postUrls.getInvestorData}${postId}`, null)
                 .then((response) => {
                     resolve(response);
                 })
@@ -400,6 +432,22 @@ export const getFranchisPosts = (user_id) => {
     });
 };
 
+export const deleteFranchisePosts = (postId) => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("delete", `${postUrls.getFranchisData}${postId}`, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
 export const getFranchiseBanner = (profile) => {
     return new Promise((resolve, reject) => {
         try {
@@ -473,6 +521,22 @@ export const getAdvisorPosts = (user_id) => {
     return new Promise((resolve, reject) => {
         try {
             apiCall("get", postUrls.getAdvisorData, user_id)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something wrong" });
+        }
+    });
+};
+
+export const deleteAdvisorPosts = (postId) => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("delete", `${postUrls.getAdvisorData}${postId}`, null)
                 .then((response) => {
                     resolve(response);
                 })

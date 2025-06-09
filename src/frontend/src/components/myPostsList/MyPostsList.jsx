@@ -8,10 +8,24 @@ import { FaEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button } from "flowbite-react";
+import {
+    deleteAdvisorPosts,
+    deleteBusinessPosts,
+    deleteFranchisePosts,
+    deleteInvestroPosts,
+} from "../../services/user/apiMethods";
 // import { userProfile } from "../../utils/context/reducers/authSlice";
 
 function MyPostsList({ myPosts }) {
-        const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+    const [posts, setPosts] = useState(myPosts || []);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [postToDelete, setPostToDelete] = useState(null);
+
+    useEffect(() => {
+        setPosts(myPosts || []);
+    }, [myPosts]);
 
     const navigate = useNavigate();
     const [moreOpenId, setMoreOpenId] = useState(null);
@@ -39,10 +53,6 @@ function MyPostsList({ myPosts }) {
         setMoreOpenId((prevId) => (prevId === postId ? null : postId));
     };
 
-    //     const handleViewPost = (post) => {
-    //         navigate(`/view-post-bus/${post.id}`, { state: { post } });
-    // }
-
     const handleViewPost = (postData) => {
         const profile = postData?.entity_type;
         switch (profile) {
@@ -63,14 +73,85 @@ function MyPostsList({ myPosts }) {
         }
     };
 
+    const handleDeleteMyPost = (postData) => {
+        setPostToDelete(postData);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDeletePost = () => {
+        if (!postToDelete) return;
+        const profile = postToDelete?.entity_type;
+        let deletePromise;
+        switch (profile) {
+            case "business":
+                deletePromise = deleteBusinessPosts(postToDelete?.id);
+                break;
+            case "investor":
+                deletePromise = deleteInvestroPosts(postToDelete?.id);
+                break;
+            case "franchise":
+                deletePromise = deleteFranchisePosts(postToDelete?.id);
+                break;
+            case "advisor":
+                deletePromise = deleteAdvisorPosts(postToDelete?.id);
+                break;
+            default:
+                console.warn("Unknown profile type: ", profile);
+                setShowDeleteModal(false);
+                setPostToDelete(null);
+                return;
+        }
+        deletePromise.then((response) => {
+            if (response?.ok || response?.data?.status === true) {
+                setPosts((prev) => prev.filter((p) => p.id !== postToDelete.id));
+            }
+            setShowDeleteModal(false);
+            setPostToDelete(null);
+        });
+    };
+
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setPostToDelete(null);
+    };
+
     return (
         <div>
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    {/* Background blur */}
+                    <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm"></div>
+                    <div className="relative bg-white rounded-lg shadow-lg p-8 z-10 max-w-md w-full">
+                        <h2 className="text-xl font-bold mb-4 text-red-600">Delete Post</h2>
+                        <p className="mb-4 text-gray-700">
+                            Are you sure you want to delete this post? <br />
+                            <span className="text-red-500 font-semibold">Deleted posts cannot be regained.</span>
+                        </p>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                onClick={cancelDelete}
+                                className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDeletePost}
+                                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="p-1 md:p-4 md:m-4 md:px-10 md: mt-7  bg-amber-100 rounded-md h-fit">
                 <div className=" text-2xl font-medium text-violet-900 text-center  ">My Posts</div>
                 {/* thick-yellow-underline */}
                 <hr className="p-4 m-4 border-gray-400 " />
-                {myPosts && myPosts.length > 0 ? (
-                    myPosts.map((post) => (
+                {posts && posts.length > 0 ? (
+                    posts.map((post) => (
                         <div key={post.id} className="flex md:w-full m-2 md:m-4 bg-gray-50 rounded-2xl">
                             <img
                                 onClick={() => handleViewPost(post)}
@@ -232,6 +313,12 @@ function MyPostsList({ myPosts }) {
                                                             return null; // If no profile matches, return nothing
                                                     }
                                                 })()}
+                                                <button
+                                                    onClick={() => handleDeleteMyPost(post)}
+                                                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                                >
+                                                    Delete
+                                                </button>
                                             </div>
                                         )}
                                     </div>

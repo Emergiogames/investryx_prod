@@ -32,11 +32,29 @@ export const initialInvestorValues = {
 // Validation schema
 export const validationInvestorSchema = Yup.object({
   name: Yup.string()
-    .trim() // Trim leading and trailing spaces
+    .trim()
+    .min(4, "Name must be at least 4 characters")
+    .max(200, "Name must be at most 200 characters")
     .required("Name is required")
     .matches(/^\S+.*\S$/, "Name cannot contain only spaces"),
   industry: Yup.string()
     .trim()
     .required("Industry is required")
     .matches(/^\S+.*\S$/, "Industry cannot contain only spaces"),
+  range_starting: Yup.number()
+    .typeError("Range starting must be a number")
+    .positive("Range starting must be a positive number")
+    .required("Range starting is required"),
+  range_ending: Yup.number()
+    .typeError("Range ending must be a number")
+    .positive("Range ending must be a positive number")
+    .required("Range ending is required")
+    .test(
+      "is-greater",
+      "Range ending must be greater than range starting",
+      function (value) {
+        const { range_starting } = this.parent;
+        return value > range_starting;
+      }
+    ),
 });

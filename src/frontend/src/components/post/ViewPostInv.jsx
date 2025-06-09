@@ -4,12 +4,12 @@ import { getOneRooms } from "../../services/userChat/apiMethods";
 import { MdOutlineLocationOn } from "react-icons/md";
 import Button from "@mui/material/Button";
 import { FaRegImages } from "react-icons/fa6";
-
 import { toast } from "react-toastify";
 import { use } from "react";
 import { useSelector } from "react-redux";
 import { formatDistanceToNow } from "date-fns";
 import { leftPlan } from "../../services/user/apiMethods";
+import { HiChevronLeft } from "react-icons/hi";
 
 function ViewPostInv() {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -91,8 +91,9 @@ function ViewPostInv() {
                 });
         } catch (error) {
             console.error("error occured", error);
+        } finally {
+            setLoader(false);
         }
-        setLoader(false);
     };
 
     useEffect(() => {
@@ -105,19 +106,30 @@ function ViewPostInv() {
                 } else {
                     setPlanStatus(false);
                 }
-                setLoader(false);
             } catch (error) {
                 console.error("Error happened in subscription check:", error);
+            } finally {
+                setLoader(false);
             }
         };
 
         checkPlan();
     }, []);
 
+    const handleClose = () => {
+        navigate(-1);
+    };
+
     return (
         <>
             <div className="flex justify-center items-center">
-                <div className="mt-20 rounded-3xl w-[90%] min-h-screen ">
+                <div className="rounded-3xl w-[90%] min-h-screen ">
+                    <div className="flex items-center p-4">
+                        <button onClick={handleClose} className="px-2 py-2 rounded">
+                            <HiChevronLeft className="w-10 h-10 text-yellow-400 dark:text-white" />
+                        </button>
+                        <span className="font-semibold">BACK</span>
+                    </div>
                     <div className="lg:flex">
                         {/* box left  */}
                         <div className="lg:w-1/2 min-h-[30rem] lg:p-8 lg:m-7  bg-amber-100 rounded-2xl shadow-xl">

@@ -75,11 +75,12 @@ function AboutUs() {
                     <ul className="flex flex-col items-center gap-5">
                         <li className="text-xl font-light">Top Reviews</li>
                         <li className="flex">
+                            <img src="/investryx/stars.jpg" className="w-[11rem]" alt="" />
+                            {/* <img src="/svg/star.svg" alt="" />
                             <img src="/svg/star.svg" alt="" />
                             <img src="/svg/star.svg" alt="" />
                             <img src="/svg/star.svg" alt="" />
-                            <img src="/svg/star.svg" alt="" />
-                            <img src="/svg/star.svg" alt="" />
+                            <img src="/svg/star.svg" alt="" /> */}
                         </li>
                     </ul>
                     <ul className="flex flex-col items-center gap-5">
