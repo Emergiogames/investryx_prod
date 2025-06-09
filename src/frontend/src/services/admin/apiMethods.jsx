@@ -547,7 +547,7 @@ export const AdminEditInvestor = (formData, postId) => {
 export const AdminEditBusiness = (formData, postId) => {
     return new Promise((resolve, reject) => {
         try {
-            const url = `admin/business${postId}`;
+            const url = `admin/business/${postId}`;
             adminApiCalls("patch", url, formData)
                 .then((response) => {
                     resolve(response);

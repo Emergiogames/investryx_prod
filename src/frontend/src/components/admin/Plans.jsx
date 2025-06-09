@@ -69,8 +69,13 @@ function Plans() {
     setSearchTerm(e.target.value);
   };
 
-  const filteredPosts = postStates.filter((post) =>
-    post.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // Search by name, id, or type (like InvestorList)
+  const filteredPosts = (plans || []).filter(
+    (post) =>
+      (post.name && post.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    //  ||
+    //   (post.id && post.id.toString().includes(searchTerm)) ||
+    //   (post.type && post.type.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const indexOfLastPost = currentPage * postsPerPage;
@@ -266,7 +271,7 @@ function Plans() {
                       </tr>
                     </thead>
                     <tbody>
-                      {plans.map((post, index) => (
+                      {currentPosts.map((post, index) => (
                         <tr
                           onClick={() => handleViewPlan(post)}
                           key={post.id}
@@ -520,10 +525,15 @@ function Plans() {
             {selectedPlan.description && (
               <div className="mt-6">
                 <h3 className="text-lg font-semibold">Plan Description</h3>
-                <p>
-                  <strong>Plan Name:</strong>{" "}
-                  {selectedPlan.description.plan?.name}
-                </p>
+                {Array.isArray(selectedPlan.description) && selectedPlan.description.length > 0 ? (
+                  <ul className="list-disc pl-6">
+                    {selectedPlan.description.map((desc, idx) => (
+                      <li key={idx}>{desc}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">No description</p>
+                )}
 
                 {/* Plan Features */}
                 {selectedPlan.description.plan?.features && (
@@ -541,51 +551,33 @@ function Plans() {
                       <strong>Proposal Limit:</strong>{" "}
                       {selectedPlan.description.plan.features.proposal_limit}
                     </p>
-
                     {/* Profile Activation */}
-                    {selectedPlan.description.plan.features
-                      .profile_activation && (
+                    {selectedPlan.description.plan.features.profile_activation && (
                       <div className="ml-4 mt-2">
                         <h4 className="text-md font-semibold">
                           Profile Activation
                         </h4>
                         <p>
                           <strong>Speed:</strong>{" "}
-                          {
-                            selectedPlan.description.plan.features
-                              .profile_activation.speed
-                          }
+                          {selectedPlan.description.plan.features.profile_activation.speed}
                         </p>
                         <p>
                           <strong>Promotion:</strong>{" "}
-                          {
-                            selectedPlan.description.plan.features
-                              .profile_activation.promotion
-                          }
+                          {selectedPlan.description.plan.features.profile_activation.promotion}
                         </p>
                         <p>
                           <strong>Visibility:</strong>{" "}
-                          {
-                            selectedPlan.description.plan.features
-                              .profile_activation.visibility
-                          }
+                          {selectedPlan.description.plan.features.profile_activation.visibility}
                         </p>
                       </div>
                     )}
-
                     <p>
                       <strong>Confidentiality Option:</strong>{" "}
-                      {
-                        selectedPlan.description.plan.features
-                          .confidentiality_option
-                      }
+                      {selectedPlan.description.plan.features.confidentiality_option}
                     </p>
                     <p>
                       <strong>Targeted Proposal Distribution:</strong>{" "}
-                      {
-                        selectedPlan.description.plan.features
-                          .targeted_proposal_distribution
-                      }
+                      {selectedPlan.description.plan.features.targeted_proposal_distribution}
                     </p>
                   </div>
                 )}
