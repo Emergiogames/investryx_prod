@@ -1,20 +1,21 @@
 import React, { useState } from "react";
-import { Formik, Field, Form, useFormikContext } from "formik";
+import { Formik, Field, Form, ErrorMessage } from "formik";
 import UserList from "./UserList";
 import { AdminNotification } from "../../services/admin/apiMethods";
-import {  toast } from 'react-toastify';
+import { toast } from 'react-toastify';
+import * as Yup from "yup";
 
 const AdminPushNotification = () => {
-  const [activeTab, setActiveTab] = useState("addPost"); // State to manage active tab
-  const [image, setImage] = useState(null); // State to store the image file
-  const [preview, setPreview] = useState(null); // State to store the preview URL
-  const [showUserIdInput, setShowUserIdInput] = useState(false); // Manage visibility of UserID input
+  const [activeTab, setActiveTab] = useState("addPost");
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [showUserIdInput, setShowUserIdInput] = useState(false);
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       setImage(file);
-      setPreview(URL.createObjectURL(file)); // Generate preview URL
+      setPreview(URL.createObjectURL(file));
     }
   };
 
@@ -32,8 +33,6 @@ const AdminPushNotification = () => {
     if (image) {
       formData.append("image", image);
     }
-    console.log("submit data notification", formData);
-
     AdminNotification(formData)
       .then((response) => {
         if (response.data.status === true) {
@@ -44,7 +43,7 @@ const AdminPushNotification = () => {
       .catch((error) => {
         console.error("Error sending notification:", error);
         toast.error("Failed to send notification.");
-        setSubmitting(false); // Stop submitting
+        setSubmitting(false);
       });
   };
 
@@ -52,11 +51,24 @@ const AdminPushNotification = () => {
     const selectedValue = e.target.value;
     setShowUserIdInput(selectedValue === "enter");
     if (selectedValue !== "enter") {
-      setFieldValue("userId", selectedValue); // Update userId in Formik
+      setFieldValue("userId", selectedValue);
     } else {
-      setFieldValue("userId", ""); // Reset userId when entering manually
+      setFieldValue("userId", "");
     }
   };
+
+  const notificationValidationSchema = Yup.object({
+    title: Yup.string().trim().required("Title is required"),
+    description: Yup.string().trim().required("Description is required"),
+    url: Yup.string()
+      .trim()
+      .matches(
+        /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/,
+        "Enter a valid website URL (e.g., https://example.com)"
+      )
+      .notRequired(),
+    userId: Yup.string().notRequired(),
+  });
 
   return (
     <div className="w-full h-screen bg-gray-100 flex flex-col items-center">
@@ -64,7 +76,7 @@ const AdminPushNotification = () => {
       <div className="flex space-x-4 mt-6">
         <button
           className={`px-6 py-2 text-white rounded-lg ${
-            activeTab === "addPost" ? "bg-indigo-600" : "bg-gray-400"
+            activeTab === "addPost" ? "bg-amber-500" : "bg-amber-300"
           }`}
           onClick={() => setActiveTab("addPost")}
         >
@@ -72,7 +84,7 @@ const AdminPushNotification = () => {
         </button>
         <button
           className={`px-6 py-2 text-white rounded-lg ${
-            activeTab === "viewUsers" ? "bg-indigo-600" : "bg-gray-400"
+            activeTab === "viewUsers" ? "bg-amber-500" : "bg-amber-300"
           }`}
           onClick={() => setActiveTab("viewUsers")}
         >
@@ -81,10 +93,10 @@ const AdminPushNotification = () => {
       </div>
 
       {/* Content Based on Active Tab */}
-      <div className="bg-white shadow-lg rounded-lg p-8 mt-8 w-[40rem]">
+      <div className="bg-white shadow-lg rounded-lg p-8 mt-8  ">
         {activeTab === "addPost" && (
           <>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            <h2 className="text-2xl font-semibold text-amber-700 mb-6">
               Push Notification
             </h2>
             <Formik
@@ -94,9 +106,10 @@ const AdminPushNotification = () => {
                 userId: "all",
                 url: "",
               }}
+              validationSchema={notificationValidationSchema}
               onSubmit={submit}
             >
-              {({ isSubmitting, setFieldValue }) => (
+              {({ isSubmitting, setFieldValue, errors, touched }) => (
                 <Form className="space-y-6">
                   {/* Title Field */}
                   <div>
@@ -111,7 +124,16 @@ const AdminPushNotification = () => {
                       name="title"
                       id="title"
                       placeholder="Enter notification title"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                      className={`w-full px-4 py-2 border rounded-md focus:ring focus:ring-amber-200 focus:border-amber-500 ${
+                        errors.title && touched.title
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    <ErrorMessage
+                      name="title"
+                      component="div"
+                      className="text-red-500 text-xs mt-1"
                     />
                   </div>
 
@@ -129,7 +151,16 @@ const AdminPushNotification = () => {
                       id="description"
                       rows="4"
                       placeholder="Enter notification description"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                      className={`w-full px-4 py-2 border rounded-md focus:ring focus:ring-amber-200 focus:border-amber-500 ${
+                        errors.description && touched.description
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    <ErrorMessage
+                      name="description"
+                      component="div"
+                      className="text-red-500 text-xs mt-1"
                     />
                   </div>
 
@@ -145,14 +176,12 @@ const AdminPushNotification = () => {
                       as="select"
                       name="userIdOption"
                       id="userIdOption"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                      className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-amber-200 focus:border-amber-500 border-gray-300"
                       onChange={(e) => handleUserIdChange(e, setFieldValue)}
                     >
                       <option value="all">All Users</option>
                       <option value="enter">Enter User ID</option>
                     </Field>
-
-                    {/* Conditionally Rendered User ID Input */}
                     {showUserIdInput && (
                       <div className="mt-4">
                         <label
@@ -166,7 +195,12 @@ const AdminPushNotification = () => {
                           id="userId"
                           type="text"
                           placeholder="Enter User ID"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-amber-200 focus:border-amber-500"
+                        />
+                        <ErrorMessage
+                          name="userId"
+                          component="div"
+                          className="text-red-500 text-xs mt-1"
                         />
                       </div>
                     )}
@@ -185,7 +219,16 @@ const AdminPushNotification = () => {
                       name="url"
                       id="url"
                       placeholder="Enter a URL (e.g., https://example.com)"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                      className={`w-full px-4 py-2 border rounded-md focus:ring focus:ring-amber-200 focus:border-amber-500 ${
+                        errors.url && touched.url
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    <ErrorMessage
+                      name="url"
+                      component="div"
+                      className="text-red-500 text-xs mt-1"
                     />
                   </div>
 
@@ -233,7 +276,7 @@ const AdminPushNotification = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition"
+                      className="w-full bg-amber-500 text-white py-2 rounded-md hover:bg-amber-600 transition"
                     >
                       {isSubmitting ? "Sending..." : "Send Notification"}
                     </button>

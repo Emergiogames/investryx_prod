@@ -44,7 +44,7 @@ const BusinessList = () => {
     };
 
     const filteredPosts = Array.isArray(postStates)
-        ? postStates.filter((post) => post.entity_type.toLowerCase().includes(searchTerm.toLowerCase()))
+        ? postStates.filter((post) => post?.title.toLowerCase().includes(searchTerm.toLowerCase()))
         : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
@@ -168,7 +168,7 @@ const BusinessList = () => {
                                                 Title
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-center">
-                                                Industry
+                                                Entity
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-center">
                                                 City
@@ -180,7 +180,7 @@ const BusinessList = () => {
                                                 Created At
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-center">
-                                                Entity
+                                                Industry
                                             </th>
 
                                             <th scope="col" className="px-6 py-3 text-center">
@@ -202,7 +202,7 @@ const BusinessList = () => {
                                                                 ? BASE_URL + post.image1
                                                                 : post.logo
                                                                 ? BASE_URL + post.logo
-                                                                : []
+                                                                : "/images/no-image-icon.png"
                                                         }
                                                         alt={post.title}
                                                         className="w-14 h-14 object-cover rounded-lg"
@@ -218,7 +218,7 @@ const BusinessList = () => {
                                                     {new Date(post.listed_on).toLocaleDateString()}
                                                 </td>
                                                 <td className="px-6 py-4 text-center">
-                                                    {post?.entity ? post.entity : "n/a"}
+                                                    {post?.industry ? post.industry : "n/a"}
                                                 </td>
 
                                                 <td className="px-6 py-4 text-center">

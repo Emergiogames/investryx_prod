@@ -44,17 +44,21 @@ export const validationInvestorSchema = Yup.object({
   range_starting: Yup.number()
     .typeError("Range starting must be a number")
     .positive("Range starting must be a positive number")
-    .required("Range starting is required"),
+     .notRequired(),
   range_ending: Yup.number()
     .typeError("Range ending must be a number")
     .positive("Range ending must be a positive number")
-    .required("Range ending is required")
+    .notRequired()
     .test(
       "is-greater",
       "Range ending must be greater than range starting",
       function (value) {
         const { range_starting } = this.parent;
-        return value > range_starting;
+        // Only validate if range_ending is present
+        if (value && range_starting) {
+          return value > range_starting;
+        }
+        return true;
       }
     ),
 });

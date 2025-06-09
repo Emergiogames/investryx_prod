@@ -178,6 +178,7 @@ function BusinessViewPost() {
                     resetState3();
                     setLoading(!loading);
                     handleCancelClick();
+                     navigate("/admin/postVerify");
                 } else {
                     toast.error(response.data.message);
                 }
@@ -192,7 +193,7 @@ function BusinessViewPost() {
         resetState2();
         resetState3();
         // closeAddPost();
-        navigate("/");
+        navigate("/admin");
     };
 
     // Select state and city

@@ -637,7 +637,7 @@ export const addBusinessPost = (formData) => {
 export const editBusinessPost = (formData, postId) => {
     return new Promise((resolve, reject) => {
         try {
-            const url = `/business${postId}`;
+            const url = `/business/${postId}`;
             apiCall("patch",url, formData)
                 .then((response) => {
                     resolve(response);

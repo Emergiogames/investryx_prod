@@ -56,38 +56,38 @@ export const validationSchema = Yup.object({
     .matches(/^\S+.*\S$/, "Description cannot contain only spaces"),
   single_desc: Yup.string()
     .trim()
-    .required("Single description is required")
-    .matches(/^\S+.*\S$/, "Single description cannot contain only spaces"),
+    .matches(/^\S+.*\S$/, "Single description cannot contain only spaces")
+     .notRequired(),
   establish_yr: Yup.number()
     .typeError("Establish year must be a number")
     .integer("Establish year must be an integer")
     .max(new Date().getFullYear(), `Establish year cannot be in the future`)
-    .required("Establish year is required"),
+     .notRequired(),
   pin: Yup.number()
     .typeError("Pin must be a number")
     .integer("Pin must be an integer")
     .positive("Pin must be a positive number")
-    .required("Pin is required"),
+     .notRequired(),
   employees: Yup.number()
     .typeError("Employees must be a number")
     .integer("Employees must be an integer")
     .positive("Employees must be a positive number")
-    .required("Employees is required"),
+     .notRequired(),
   avg_monthly: Yup.number()
     .typeError("Average monthly sales must be a number")
     .positive("Average monthly sales must be a positive number")
-    .required("Average monthly sales is required"),
+     .notRequired(),
   latest_yearly: Yup.number()
     .typeError("Latest yearly sales must be a number")
     .positive("Latest yearly sales must be a positive number")
-    .required("Latest yearly sales is required"),
+     .notRequired(),
   ebitda: Yup.number()
     .typeError("EBITDA must be a number")
     .min(0, "EBITDA must be at least 0")
     .max(100, "EBITDA cannot be more than 100")
-    .required("EBITDA is required"),
+     .notRequired(),
   asking_price: Yup.number()
     .typeError("Asking price must be a number")
     .positive("Asking price must be a positive number")
-    .required("Asking price is required"),
+     .notRequired(),
 });

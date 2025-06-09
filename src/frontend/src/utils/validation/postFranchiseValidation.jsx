@@ -52,22 +52,28 @@ export const validationFranchiseSchema = Yup.object({
   ),
   initial: Yup.number()
     .typeError("Initial must be a number")
-    .positive("Initial must be a positive number"),
+    .positive("Initial must be a positive number")
+    .notRequired(),
   proj_ROI: Yup.number()
     .typeError("Projected ROI must be a number")
-    .positive("Projected ROI must be a positive number"),
+    .positive("Projected ROI must be a positive number")
+    .notRequired(),
   total_outlets: Yup.number()
     .typeError("Total outlets must be a number")
-    .positive("Total outlets must be a positive number"),
+    .positive("Total outlets must be a positive number")
+    .notRequired(),
   yr_period: Yup.number()
     .typeError("Year period must be a number")
-    .positive("Year period must be a positive number"),
+    .positive("Year period must be a positive number")
+    .notRequired(),
   min_space: Yup.number()
     .typeError("Minimum space must be a number")
-    .positive("Minimum space must be a positive number"),
+    .positive("Minimum space must be a positive number")
+    .notRequired(),
   max_space: Yup.number()
     .typeError("Maximum space must be a number")
     .positive("Maximum space must be a positive number")
+    .notRequired()
     .test(
       "is-greater",
       "Maximum space must be greater than minimum space",
@@ -82,10 +88,12 @@ export const validationFranchiseSchema = Yup.object({
     ),
   range_starting: Yup.number()
     .typeError("Range starting must be a number")
-    .positive("Range starting must be a positive number"),
+    .positive("Range starting must be a positive number")
+    .notRequired(),
   range_ending: Yup.number()
     .typeError("Range ending must be a number")
     .positive("Range ending must be a positive number")
+    .notRequired()
     .test(
       "is-greater",
       "Range ending must be greater than range starting",
@@ -100,15 +108,19 @@ export const validationFranchiseSchema = Yup.object({
     ),
   brand_fee: Yup.number()
     .typeError("Brand fee must be a number")
-    .positive("Brand fee must be a positive number"),
+    .positive("Brand fee must be a positive number")
+    .notRequired(),
   staff: Yup.number()
     .typeError("Staff must be a number")
-    .positive("Staff must be a positive number"),
+    .positive("Staff must be a positive number")
+    .notRequired(),
   avg_monthly_sales: Yup.number()
     .typeError("Average monthly sales must be a number")
-    .positive("Average monthly sales must be a positive number"),
+    .positive("Average monthly sales must be a positive number")
+    .notRequired(),
   ebitda: Yup.number()
     .typeError("EBITDA must be a number")
     .min(0, "EBITDA must be at least 0")
-    .max(100, "EBITDA cannot be more than 100"),
+    .max(100, "EBITDA cannot be more than 100")
+    .notRequired(),
 });

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { adminPostBlock, adminInvestorList } from "../../services/admin/apiMethods";
 import { useNavigate } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
 
 const InvestorList = () => {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -46,8 +47,12 @@ const InvestorList = () => {
         setSearchTerm(e.target.value);
     };
 
-    const filteredPosts = postStates.filter((post) => post.title.toLowerCase().includes(searchTerm.toLowerCase()));
-
+    const filteredPosts = postStates.filter(
+        (post) =>
+            (post.title && post.title.toLowerCase().includes(searchTerm.toLowerCase())) 
+        ||
+           (post?.id && post.id.toString().includes(searchTerm))
+    );
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
@@ -165,7 +170,11 @@ const InvestorList = () => {
                                                     }
                                                 >
                                                     <img
-                                                        src={BASE_URL + post.image1}
+                                                        src={
+                                                            post.image1
+                                                                ? BASE_URL + post.image1
+                                                                : "/images/no-image-icon.png"
+                                                        }
                                                         alt={post.title}
                                                         className="w-14 h-14 object-cover rounded-lg"
                                                     />
@@ -173,7 +182,12 @@ const InvestorList = () => {
                                                 <td className="px-6 py-4">{post.title}</td>
                                                 <td className="px-6 py-4 text-center">{post.user}</td>
                                                 <td className="px-6 py-4 text-center">{post.name}</td>
-                                                <td className="px-6 py-4 text-center">{post.created_at}</td>
+                                                <td className="px-6 py-4 text-center">
+                                                    {" "}
+                                                    {post.listed_on
+                                                        ? formatDistanceToNow(new Date(post.listed_on), { addSuffix: true })
+                                                        : "N/A"}
+                                                </td>
                                                 <td className="px-6 py-4 text-center">
                                                     {post.block ? "Blocked" : "Unblocked"}
                                                 </td>
