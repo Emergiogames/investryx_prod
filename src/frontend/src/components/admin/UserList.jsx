@@ -44,7 +44,11 @@ const UserList = () => {
         setSearchTerm(e.target.value);
     };
 
-    const filteredUsers = userStates.filter((user) => user.first_name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredUsers = userStates.filter(
+        (user) =>
+            (user.first_name && user.first_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (user?.id && user.id.toString().includes(searchTerm))
+    );
 
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -257,6 +261,9 @@ const UserList = () => {
                         onConfirm={handleUserBlock}
                         message={modalMessage}
                     />
+                </div>
+                <div className="ml-5 p-5">
+                    * Search queries are based on user-Id and Username in Credentials
                 </div>
             </div>
         </>

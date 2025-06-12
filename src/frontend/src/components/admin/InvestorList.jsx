@@ -138,10 +138,13 @@ const InvestorList = () => {
                                                 Title
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-center">
-                                                Username
+                                                User-Id
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-center">
                                                 Franchis Name
+                                            </th>
+                                              <th scope="col" className="px-6 py-3 text-center">
+                                                Post-Id
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-center">
                                                 Date
@@ -182,6 +185,7 @@ const InvestorList = () => {
                                                 <td className="px-6 py-4">{post.title}</td>
                                                 <td className="px-6 py-4 text-center">{post.user}</td>
                                                 <td className="px-6 py-4 text-center">{post.name}</td>
+                                                <td className="px-6 py-4 text-center">{post.id}</td>
                                                 <td className="px-6 py-4 text-center">
                                                     {" "}
                                                     {post.listed_on
@@ -242,6 +246,9 @@ const InvestorList = () => {
                         onConfirm={handlePostBlock}
                         message={modalMessage}
                     />
+                </div>
+                 <div className="ml-5 p-5">
+                    * Search queries are based on Title and Post-Id
                 </div>
             </div>
         </>
