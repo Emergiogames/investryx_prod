@@ -836,36 +836,16 @@ class TotalTimeSpentView(APIView):
                     if user.block:
                         return Response({'status': False, 'message': 'User is blocked'})
                     user_id = request.query_params.get('user_id')
-                    start_date = request.query_params.get('start_date')
-                    end_date = request.query_params.get('end_date')
-
-                    if not user_id or not start_date or not end_date:
+                    
+                    if not user_id :
                         return Response({"error": "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
 
                     try:
                        
-                        start_date = make_aware(datetime.combine(parse_date(start_date), datetime.min.time()))
-                        end_date = make_aware(datetime.combine(parse_date(end_date), datetime.max.time()))
-
-
-                      
-                        if not start_date or not end_date:
-                            raise ValueError("Invalid date format")
-
-                        sessions = UserSession.objects.filter(
-                            user_id=user_id,
-                            login_time__gte=start_date,
-                            logout_time__lte=end_date
-                        )
-
-                        
-                        total_seconds = sessions.aggregate(total=Sum('session_duration'))['total'] or 0
-                        hours = total_seconds // 3600
-                        minutes = (total_seconds % 3600) // 60
-
+                        sessions=UserProfile.objects.get(id=user_id)
                         return Response({
                             "user_id": user_id,
-                            "total_time_spent": f"{hours} hours, {minutes} minutes"
+                            "total_time_spent": sessions.total_hr_spend
                         })
 
                     except ValueError:
@@ -895,7 +875,7 @@ class MonthlyUserJoinCount(APIView):
             return Response({'status': False, 'message': 'Invalid month or year format'}, status=400)
         # Count users who joined in the given month and year (excluding superusers)
         users_count = UserProfile.objects.filter(
-            date_joined__year=year,
+           date_joined__year=year,
             date_joined__month=month,
             is_superuser=False
         ).count()
