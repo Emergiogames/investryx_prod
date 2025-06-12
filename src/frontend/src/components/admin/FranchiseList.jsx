@@ -252,6 +252,9 @@ const FranchiseList = () => {
                         message={modalMessage}
                     />
                 </div>
+                 <div className="ml-5 p-5">
+                    * Search queries are based on Title and Post-Id
+                </div>
             </div>
         </>
     );

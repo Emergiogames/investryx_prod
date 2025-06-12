@@ -139,10 +139,10 @@ const AdvisorList = () => {
                                                 Title
                                             </th>
                                             <th scope="col" className="px-6 py-3">
-                                                Post-id
+                                                User-Id
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-center">
-                                                Username
+                                                Post-id
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-center">
                                                 Franchis Name
@@ -151,7 +151,7 @@ const AdvisorList = () => {
                                                 Date
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-center">
-                                                State
+                                                Status
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-center">
                                                 Action
@@ -186,9 +186,9 @@ const AdvisorList = () => {
                                                     />
                                                 </td>
                                                 <td className="px-6 py-4">{post.title}</td>
-                                                <td className="px-6 py-4">{post.id}</td>
+                                                <td className="px-6 py-4">{post.user}</td>
 
-                                                <td className="px-6 py-4 text-center">{post.user}</td>
+                                                <td className="px-6 py-4 text-center">{post.id}</td>
                                                 <td className="px-6 py-4 text-center">{post.name}</td>
                                                 {/* <td className="px-6 py-4 text-center">{post.created_at}</td> */}
                                                 <td className="px-6 py-4 text-center">
@@ -251,6 +251,9 @@ const AdvisorList = () => {
                         onConfirm={handlePostBlock}
                         message={modalMessage}
                     />
+                </div>
+                 <div className="ml-5 p-5">
+                    * Search queries are based on Title and Post-Id
                 </div>
             </div>
         </>
