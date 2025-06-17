@@ -437,7 +437,7 @@ class Notifications(APIView):
                 mutable_data = request.data.copy()
                 if mutable_data.get('userId') != "all":
                     user = UserProfile.objects.get(id=mutable_data.get('userId'))
-                    mutable_data['user'] = user.id
+                    mutable_data.setlist('user', [str(user.id)])
                 else:
                     users = UserProfile.objects.all()
                     mutable_data['user'] = users.first().id
